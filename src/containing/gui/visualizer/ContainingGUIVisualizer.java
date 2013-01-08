@@ -71,9 +71,19 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         rootNode.attachChild(audio_ambient);
         audio_ambient.play(); // play continuously!
 
+        Logger.getLogger("").setLevel(Level.SEVERE);
         generateShips();
     }
    
+    
+    private int findLowestNeighbour(int i, int j, Boat boat, int maxheight){
+        //Low edge
+        if(i<=0 || j <=0 || i>=boat.storage.getWidth()-1 || i>=boat.storage.getLength()-1)return 0;
+        
+        
+        return maxheight;
+        
+    }
     private void generateContainers(Boat boat){
         int width = boat.storage.getWidth();
         int length = boat.storage.getLength();
@@ -82,16 +92,17 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         for(int i = 0 ; i < width ; i++){
             for(int j = 0 ; j < length ; j++){
                 try {
+                    int startHeight = findLowestNeighbour(i,j,boat,height);
                     Container c = boat.storage.peakContainer(i, j);
-                  
                     
-                    Vector3f pos = new Vector3f(boat.getPosition().x + i*2.5f - width*2.5f/2 + 1.25f, 
-                                                boat.getPosition().y + boat.storage.Count(i, j) * 2.5f, 
-                                                boat.getPosition().z + j*6f - length*6f/2);
+                    if(startHeight>boat.storage.Count(i, j))startHeight=boat.storage.Count(i, j);
                     
-                    objMgr.addContainer(c.getContainNr(), 
-                                        pos);
-                    
+                    for(int k = startHeight ; k <= boat.storage.Count(i, j) ; k++){
+                        Vector3f pos = new Vector3f(boat.getPosition().x + i*2.5f - width*2.5f/2 + 1.25f, 
+                                                    boat.getPosition().y + k * 2.5f, 
+                                                    boat.getPosition().z + j*6f - length*6f/2);
+                        objMgr.addContainer(c.getContainNr(), pos);
+                    }
                 } catch (Exception ex) {
                     
                 }
@@ -100,16 +111,18 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
     
     private void generateShips(){
+        int i = 0;
         try {
             //Database.restoreDump();
             XML.XMLBinder.GenerateContainerDatabase("C:/Users/EightOneGulf/Dropbox/containing/XML files/xml7.xml");
             List<Boat> GetSeaBoats = Vehicles.GenerateVehicles.GetSeaBoats();
             System.out.println(GetSeaBoats.size());
             for( Boat b : GetSeaBoats ){
+                b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
                 objMgr.addShip(-1, new Vector3f(b.getPosition().x, b.getPosition().y, b.getPosition().z));
                 generateContainers(b);
-                
-                break;
+                i+=75;
+                //break;
             }
             
         } catch (Exception ex) {
