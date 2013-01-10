@@ -12,6 +12,8 @@ import com.jme3.audio.AudioNode;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.*;
 import com.jme3.scene.Geometry;
@@ -34,21 +36,24 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     public static void main(String[] args) {
         new ContainingGUIVisualizer().start();
     }
+    
+    Geometry water;
     objectManager objMgr;
     Node sceneNode, containerNode;
-    AudioNode audio_ambient;
+    AudioNode audio_ambient, audio_picard;
     @Override
     public void simpleInitApp() {
         sceneNode = new Node();
         containerNode = new Node();
-        
+
         rootNode.attachChild(sceneNode);
         rootNode.attachChild(containerNode);
-        
+
         sceneNode.attachChild(SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false));
         
         cam.setFrustumFar(50000);
         cam.onFrameChange();
+        cam.setLocation(new Vector3f(-100,10,10));
         flyCam.setMoveSpeed(50);
         objMgr = new objectManager(sceneNode, containerNode, assetManager);
 
@@ -57,11 +62,17 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         //objMgr.addShip(-1, new Vector3f(7.0f*2.5f, 0, 45));
 
 
-        inputManager.addMapping("Remove",  new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addListener(actionListener, new String[]{"Remove"});
+        inputManager.addMapping("Forward",  new KeyTrigger(KeyInput.KEY_U));
+        inputManager.addMapping("Reverse",  new KeyTrigger(KeyInput.KEY_J));
+        inputManager.addMapping("Left",  new KeyTrigger(KeyInput.KEY_H));
+        inputManager.addMapping("Right",  new KeyTrigger(KeyInput.KEY_K));
+        inputManager.addListener(actionListener, new String[]{"Forward"});
+        inputManager.addListener(actionListener, new String[]{"Reverse"});
+        inputManager.addListener(actionListener, new String[]{"Left"});
+        inputManager.addListener(actionListener, new String[]{"Right"});
 
         createWater(sceneNode);
-
+        createHarbor(sceneNode);
         
         audio_ambient = new AudioNode(assetManager, "Sounds/ambientLoop.ogg", false);
         audio_ambient.setLooping(true);  // activate continuous playing
@@ -69,10 +80,20 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         audio_ambient.setLocalTranslation(Vector3f.ZERO.clone());
         audio_ambient.setVolume(3);
         rootNode.attachChild(audio_ambient);
-        audio_ambient.play(); // play continuously!
+        
+        
+        audio_picard = new AudioNode(assetManager, "Sounds/the_picard_song.ogg", false);
+        audio_picard.setLooping(true);  // activate continuous playing
+        audio_picard.setPositional(true);
+        audio_picard.setLocalTranslation(Vector3f.ZERO.clone());
+        audio_picard.setVolume(0);
+        rootNode.attachChild(audio_picard);
 
         Logger.getLogger("").setLevel(Level.SEVERE);
         generateShips();
+
+        audio_ambient.play(); // play continuously!
+        audio_picard.play(); // play continuously!
     }
    
     
@@ -84,7 +105,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         return maxheight;
         
     }
-    private void generateContainers(Boat boat){
+    private void generateContainers(boat boat){
         int width = boat.storage.getWidth();
         int length = boat.storage.getLength();
         int height = boat.storage.getHeight();
@@ -98,10 +119,12 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                     if(startHeight>boat.storage.Count(i, j))startHeight=boat.storage.Count(i, j);
                     
                     for(int k = startHeight ; k <= boat.storage.Count(i, j) ; k++){
-                        Vector3f pos = new Vector3f(boat.getPosition().x + i*2.5f - width*2.5f/2 + 1.25f, 
-                                                    boat.getPosition().y + k * 2.5f, 
-                                                    boat.getPosition().z + j*6f - length*6f/2);
-                        objMgr.addContainer(c.getContainNr(), pos);
+                        Vector3f pos = new Vector3f(i*2.5f - width*2.5f/2 + 1.25f, 
+                                                    k * 2.5f, 
+                                                    j*6f - length*6f/2);
+                        //objMgr.addContainer(c.getContainNr(), pos);
+                       
+                        boat.addContainer(c.getContainNr(), pos);
                     }
                 } catch (Exception ex) {
                     
@@ -115,14 +138,16 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         try {
             //Database.restoreDump();
             XML.XMLBinder.GenerateContainerDatabase("C:/Users/EightOneGulf/Dropbox/containing/XML files/xml7.xml");
+            //Database.dumpDatabase();
+            
             List<Boat> GetSeaBoats = Vehicles.GenerateVehicles.GetSeaBoats();
             System.out.println(GetSeaBoats.size());
             for( Boat b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
-                objMgr.addShip(-1, new Vector3f(b.getPosition().x, b.getPosition().y, b.getPosition().z));
-                generateContainers(b);
+                boat bs = objMgr.addShip(b);
+                generateContainers(bs);
                 i+=75;
-                //break;
+                break;
             }
             
         } catch (Exception ex) {
@@ -145,6 +170,42 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     
     }
     
+    private void createHarbor(Node sceneNode){
+        Box box = new Box( Vector3f.ZERO, 500,10,500);
+        Geometry harborblock = new Geometry("Box", box);
+        Material harbormat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        harbormat.setTexture("DiffuseMap", assetManager.loadTexture("Models/Harbor/Textures/concrete.jpg"));
+        harborblock.setMaterial(harbormat);
+        harborblock.setLocalTranslation(-520, -10, 0);
+        sceneNode.attachChild(harborblock);
+        
+        
+        Spatial agv = assetManager.loadModel("Models/AGV/AGV.obj"); 
+        Material mat_agv = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        //mat_agv.setColor("Color", ColorRGBA.White);
+        mat_agv.setTexture("DiffuseMap", assetManager.loadTexture("Models/AGV/Textures/agv.png"));
+        agv.setMaterial(mat_agv);
+        agv.setLocalTranslation(-50, 0, 0);
+        sceneNode.attachChild(agv);   
+        
+        Spatial truck = assetManager.loadModel("Models/Truck/Truck.obj"); 
+        Material mat_truck = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        //mat_agv.setColor("Color", ColorRGBA.White);
+        mat_truck.setTexture("DiffuseMap", assetManager.loadTexture("Models/Truck/Textures/truck.png"));
+        truck.setMaterial(mat_truck);
+        truck.setLocalTranslation(-55, 0, 0);
+        sceneNode.attachChild(truck);
+        
+        
+        DirectionalLight sun = new DirectionalLight();
+        sun.setColor(ColorRGBA.White);
+        sun.setDirection(new Vector3f(-.5f,-.5f,-.5f).normalizeLocal());
+        rootNode.addLight(sun);
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.White.mult(1.3f));
+        rootNode.addLight(al);
+    }
+    
     private void createWater(Node sceneNode){
         SimpleWaterProcessor waterProcessor = new SimpleWaterProcessor(assetManager);
         waterProcessor.setReflectionScene(sceneNode);
@@ -161,7 +222,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         Quad quad = new Quad(4000,4000);
         quad.scaleTextureCoordinates(new Vector2f(6f,6f));
         
-        Geometry water = new Geometry("water", quad);
+        water = new Geometry("water", quad);
         water.setLocalRotation(  new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X) );
         water.setLocalTranslation(-2000, -6, 2000);
         
@@ -173,10 +234,47 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         rootNode.attachChild(water);
     }
 
+    
+    @Override
+    public void simpleUpdate(float tpf) {
+        objMgr.update(tpf);
+        water.setLocalTranslation(cam.getLocation().x-2000, water.getLocalTranslation().y, cam.getLocation().z+2000);
+
+        //Set picard volume
+        if(objMgr.boatList.size()>0){
+            float leastDistance = 999999;
+            Helpers.Vector3f camPos = new Helpers.Vector3f(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
+            
+            for(boat b : objMgr.boatList){
+                float curDist = Helpers.Vector3f.distance(camPos, b.getPosition());
+                if(curDist<leastDistance)leastDistance = curDist;
+            }
+            
+            float maxVolume = 1f;
+            float divider = 100f;
+            leastDistance/=divider;
+            maxVolume-=leastDistance;
+            if(maxVolume<0)maxVolume=0;
+            audio_picard.setVolume(maxVolume);
+        }else{
+            audio_picard.setVolume(0);
+        }
+    }    
+    
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
-            if (name.equals("Remove") && !keyPressed) {
-                //objMgr.destroyContainer(0);
+            if (name.equals("Forward")) {
+                //objMgr.boatList.get(0).move(1f, 0f);
+                System.out.println("Forward");
+            }            
+            if (name.equals("Reverse")) {
+                //objMgr.boatList.get(0).move(-1f, 0f);
+            }         
+            if (name.equals("Left") && !keyPressed) {
+                //objMgr.boatList.get(0).move(0f, -1f);
+            }         
+            if (name.equals("Right") && !keyPressed) {
+                //objMgr.boatList.get(0).move(0f, 1f);
             }
         }
     };

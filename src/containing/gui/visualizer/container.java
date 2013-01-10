@@ -14,11 +14,13 @@ import com.jme3.scene.shape.Box;
 
 public class container {
     public int id;
-    public Spatial model;
+    public static Spatial model;
     
     public container(int id, Spatial model, Vector3f position){
         model.setLocalTranslation(position);
         this.model = model;
         this.id = id;
     }
+    
+    
 }
