@@ -6,7 +6,7 @@ package containing.gui.visualizer;
 
 import Main.Container;
 import Main.Database;
-import Vehicles.Boat;
+import Pathfinding.Pathfinder;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
 import com.jme3.input.KeyInput;
@@ -38,11 +38,14 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
     
     Geometry water;
-    objectManager objMgr;
+    ObjectManager objMgr;
     Node sceneNode, containerNode;
     AudioNode audio_ambient, audio_picard;
     @Override
     public void simpleInitApp() {
+        Pathfinding.Pathfinder.generateGrid();
+        
+        
         sceneNode = new Node();
         containerNode = new Node();
 
@@ -55,13 +58,13 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         cam.onFrameChange();
         cam.setLocation(new Vector3f(-100,10,10));
         flyCam.setMoveSpeed(50);
-        objMgr = new objectManager(sceneNode, containerNode, assetManager);
+        objMgr = new ObjectManager(sceneNode, containerNode, assetManager);
 
         //objMgr.addContainer(0, new Vector3f(0f, 0, 0));
         //objMgr.addContainer(1, new Vector3f(2.5f, 0, 0));
         //objMgr.addShip(-1, new Vector3f(7.0f*2.5f, 0, 45));
 
-
+/*
         inputManager.addMapping("Forward",  new KeyTrigger(KeyInput.KEY_U));
         inputManager.addMapping("Reverse",  new KeyTrigger(KeyInput.KEY_J));
         inputManager.addMapping("Left",  new KeyTrigger(KeyInput.KEY_H));
@@ -69,10 +72,11 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         inputManager.addListener(actionListener, new String[]{"Forward"});
         inputManager.addListener(actionListener, new String[]{"Reverse"});
         inputManager.addListener(actionListener, new String[]{"Left"});
-        inputManager.addListener(actionListener, new String[]{"Right"});
+        inputManager.addListener(actionListener, new String[]{"Right"});*/
 
         createWater(sceneNode);
         createHarbor(sceneNode);
+        createRoads(sceneNode);
         
         audio_ambient = new AudioNode(assetManager, "Sounds/ambientLoop.ogg", false);
         audio_ambient.setLooping(true);  // activate continuous playing
@@ -80,7 +84,6 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         audio_ambient.setLocalTranslation(Vector3f.ZERO.clone());
         audio_ambient.setVolume(3);
         rootNode.attachChild(audio_ambient);
-        
         
         audio_picard = new AudioNode(assetManager, "Sounds/the_picard_song.ogg", false);
         audio_picard.setLooping(true);  // activate continuous playing
@@ -97,15 +100,15 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
    
     
-    private int findLowestNeighbour(int i, int j, Boat boat, int maxheight){
+    private int findLowestNeighbour(int i, int j, Vehicles.TransportVehicle boat, int maxheight){
         //Low edge
+        
         if(i<=0 || j <=0 || i>=boat.storage.getWidth()-1 || i>=boat.storage.getLength()-1)return 0;
         
-        
         return maxheight;
-        
     }
-    private void generateContainers(boat boat){
+    
+    private void generateContainers(VisualVehicle boat){
         int width = boat.storage.getWidth();
         int length = boat.storage.getLength();
         int height = boat.storage.getHeight();
@@ -140,11 +143,11 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             XML.XMLBinder.GenerateContainerDatabase("C:/Users/EightOneGulf/Dropbox/containing/XML files/xml7.xml");
             //Database.dumpDatabase();
             
-            List<Boat> GetSeaBoats = Vehicles.GenerateVehicles.GetSeaBoats();
+            List<Vehicles.TransportVehicle> GetSeaBoats = Vehicles.MatchVehicles.GetSeaBoats();
             System.out.println(GetSeaBoats.size());
-            for( Boat b : GetSeaBoats ){
+            for( Vehicles.TransportVehicle b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
-                boat bs = objMgr.addShip(b);
+                VisualVehicle bs = objMgr.addShip(b);
                 generateContainers(bs);
                 i+=75;
                 break;
@@ -206,6 +209,31 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         rootNode.addLight(al);
     }
     
+    private void createRoads(Node sceneNode){
+        float roadWidth = 1.0f;
+        
+        Material roadmat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        roadmat.setColor("Color", ColorRGBA.Blue);
+        
+        
+        for(Pathfinding.Path p : Pathfinding.Pathfinder.Paths){
+            
+            Mesh mesh = new Mesh();
+            mesh.setMode(Mesh.Mode.Lines);
+            mesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{  p.getPointA().getPosition().x, 
+                                                                        p.getPointA().getPosition().y, 
+                                                                        p.getPointA().getPosition().z, 
+                                                                        p.getPointB().getPosition().x, 
+                                                                        p.getPointB().getPosition().y, 
+                                                                        p.getPointB().getPosition().z});
+            mesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
+            Geometry l = new Geometry("line", mesh);
+            l.setMaterial(roadmat);
+            rootNode.attachChild(l);
+            
+        }
+    }
+    
     private void createWater(Node sceneNode){
         SimpleWaterProcessor waterProcessor = new SimpleWaterProcessor(assetManager);
         waterProcessor.setReflectionScene(sceneNode);
@@ -245,7 +273,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             float leastDistance = 999999;
             Helpers.Vector3f camPos = new Helpers.Vector3f(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
             
-            for(boat b : objMgr.boatList){
+            for(VisualVehicle b : objMgr.boatList){
                 float curDist = Helpers.Vector3f.distance(camPos, b.getPosition());
                 if(curDist<leastDistance)leastDistance = curDist;
             }
