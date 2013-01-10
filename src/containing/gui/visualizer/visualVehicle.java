@@ -20,19 +20,19 @@ import java.util.ArrayList;
  *
  * @author EightOneGulf
  */
-public class boat extends Vehicles.Boat {
+public class VisualVehicle extends Vehicles.TransportVehicle {
     private Spatial model;
     
     private com.jme3.scene.Node privateContainerNode;    
-    ArrayList<container> containerList;
+    ArrayList<Container> containerList;
     
-    public boat(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vector3f containerArraySize, Node startPosition)throws Exception{
-        super(arrivalDate, departureDate, arrivalCompany, containerArraySize, startPosition);
+    public VisualVehicle(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vehicles.Vehicle.VehicleType vehicleType, Vector3f containerArraySize, Node startPosition)throws Exception{
+        super(arrivalDate, departureDate, arrivalCompany, vehicleType, containerArraySize, startPosition);
         this.model = model;
         this.privateContainerNode = new com.jme3.scene.Node();
         containerNode.attachChild(privateContainerNode);
         
-        containerList = new ArrayList<container>();
+        containerList = new ArrayList<Container>();
 
         
         model.setLocalTranslation(startPosition.getPosition().x, startPosition.getPosition().y, startPosition.getPosition().z);
@@ -43,7 +43,8 @@ public class boat extends Vehicles.Boat {
     
     
     public void update(float gameTime){
-        Vector3f destination = this.getDestination().getPosition();
+        //Vector3f destination = this.getDestination().getPosition();
+        Vector3f destination = new Vector3f(1000,0,1000);
         Vector3f diff = new Vector3f(   destination.x - this.getPosition().x,
                                         destination.y - this.getPosition().y,
                                         destination.z - this.getPosition().z);
@@ -72,9 +73,9 @@ public class boat extends Vehicles.Boat {
 
     
     public void addContainer(int id, com.jme3.math.Vector3f position){
-        Spatial model = container.model.clone();
+        Spatial model = Container.model.clone();
         
-        container container = new container(id, model, position);
+        Container container = new Container(id, model, position);
         containerList.add(container);
         System.out.println("add container");
         privateContainerNode.attachChild(container.model);

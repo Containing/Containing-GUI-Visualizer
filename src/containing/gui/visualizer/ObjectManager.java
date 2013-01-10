@@ -5,6 +5,7 @@
 package containing.gui.visualizer;
 
 
+import Vehicles.Vehicle;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  * @author EightOneGulf
  */
 public class ObjectManager {
-    Spatial largeShipTPL, agvTPL, truckTPL;
+    Spatial largeShipTPL, agvTPL, truckTPL, defaultErrorTPL;
     Node rootNode, containerNode;
 
     
@@ -68,22 +69,35 @@ public class ObjectManager {
         mat_truck.setTexture("DiffuseMap", assetManager.loadTexture("Models/Truck/Textures/truck.png"));
         truckTPL.setMaterial(mat_truck);
         truckTPL.scale(1.00f);
+        
+        
+        defaultErrorTPL = assetManager.loadModel("Models/Error/Error.obj"); 
+        Material mat_error = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_error.setColor("Color", ColorRGBA.Red);
+        defaultErrorTPL.setMaterial(mat_error);
     }
 
     
     
     public VisualVehicle addShip(Vehicles.TransportVehicle base){
        try {
-       
-           Spatial model = largeShipTPL.clone();
- 
-           VisualVehicle b = new VisualVehicle(   model, 
-                                containerNode, 
-                                base.GetArrivalDate(), 
-                                base.GetDepartureDate(), 
-                                base.GetCompany(), 
-                                new Helpers.Vector3f(5,5,5), 
-                                new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
+           Vehicle.VehicleType type = base.GetVehicleType();
+           
+           Spatial model = defaultErrorTPL.clone();
+           
+           if(type.equals(Vehicle.VehicleType.seaBoat)) model = this.largeShipTPL.clone();
+           else if(type.equals(Vehicle.VehicleType.truck)) model = this.truckTPL.clone();
+           else if(type.equals(Vehicle.VehicleType.AGV)) model = this.agvTPL.clone();
+
+           VisualVehicle b = new VisualVehicle( model, 
+                                                containerNode, 
+                                                base.GetArrivalDate(), 
+                                                base.GetDepartureDate(), 
+                                                base.GetCompany(),
+                                                base.GetVehicleType(),
+                                                new Helpers.Vector3f(5,5,5), 
+                                                new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
+            System.out.println(base.storage.Count());
             b.storage = base.storage;
             //b.setDestination(base.getDestination());
             b.setDestination(new Pathfinding.Node(1000,1000));

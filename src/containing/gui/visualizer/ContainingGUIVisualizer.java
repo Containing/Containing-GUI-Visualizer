@@ -7,6 +7,8 @@ package containing.gui.visualizer;
 import Main.Container;
 import Main.Database;
 import Pathfinding.Pathfinder;
+import Vehicles.TransportVehicle;
+import Vehicles.Vehicle;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
 import com.jme3.input.KeyInput;
@@ -28,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import com.jme3.scene.*;
 import com.jme3.scene.shape.Box;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,6 +56,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         rootNode.attachChild(containerNode);
 
         sceneNode.attachChild(SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false));
+        //sceneNode.attachChild(SkyFactory.createSky(assetManager, "Skybox/default.png", false));
         
         cam.setFrustumFar(50000);
         cam.onFrameChange();
@@ -93,7 +97,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         rootNode.attachChild(audio_picard);
 
         Logger.getLogger("").setLevel(Level.SEVERE);
-        generateShips();
+        //generateVehicles();
 
         audio_ambient.play(); // play continuously!
         audio_picard.play(); // play continuously!
@@ -116,15 +120,16 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         for(int i = 0 ; i < width ; i++){
             for(int j = 0 ; j < length ; j++){
                 try {
-                    int startHeight = findLowestNeighbour(i,j,boat,height);
+                    int startHeight = findLowestNeighbour(i,j,boat,height-1);
+                    
                     Container c = boat.storage.peakContainer(i, j);
                     
                     if(startHeight>boat.storage.Count(i, j))startHeight=boat.storage.Count(i, j);
                     
-                    for(int k = startHeight ; k <= boat.storage.Count(i, j) ; k++){
+                    for(int k = startHeight ; k < boat.storage.Count(i, j) ; k++){
                         Vector3f pos = new Vector3f(i*2.5f - width*2.5f/2 + 1.25f, 
                                                     k * 2.5f, 
-                                                    j*6f - length*6f/2);
+                                                    j*6f - length*6f/2 + 3f);
                         //objMgr.addContainer(c.getContainNr(), pos);
                        
                         boat.addContainer(c.getContainNr(), pos);
@@ -136,15 +141,18 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         }
     }
     
-    private void generateShips(){
+    
+    private void generateVehicles(){
         int i = 0;
         try {
             //Database.restoreDump();
             XML.XMLBinder.GenerateContainerDatabase("C:/Users/EightOneGulf/Dropbox/containing/XML files/xml7.xml");
             //Database.dumpDatabase();
+
+             
+
             
-            List<Vehicles.TransportVehicle> GetSeaBoats = Vehicles.MatchVehicles.GetSeaBoats();
-            System.out.println(GetSeaBoats.size());
+            List<Vehicles.TransportVehicle> GetSeaBoats = Vehicles.MatchVehicles.GetTrucks();
             for( Vehicles.TransportVehicle b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
                 VisualVehicle bs = objMgr.addShip(b);
@@ -153,24 +161,19 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                 break;
             }
             
+            GetSeaBoats = Vehicles.MatchVehicles.GetSeaBoats();
+            for( Vehicles.TransportVehicle b : GetSeaBoats ){
+                b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
+                VisualVehicle bs = objMgr.addShip(b);
+                generateContainers(bs);
+                i+=75;
+                break;
+            }
+
+            
         } catch (Exception ex) {
             Logger.getLogger(ContainingGUIVisualizer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        /*
-        int width = 15;
-        int length = 20;
-        int height = 5;
-        
-        for(int i = 0 ; i < width ; i++){
-            for(int j = 0 ; j < length ; j++){
-                for(int z = 0 ; z < height ; z++){
-                    objMgr.addContainer(0, new Vector3f(i*2.5f, z*2.5f, j*6f));
-                }
-                
-            }         
-        }*/
-    
+        }    
     }
     
     private void createHarbor(Node sceneNode){
@@ -182,24 +185,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         harborblock.setLocalTranslation(-520, -10, 0);
         sceneNode.attachChild(harborblock);
         
-        
-        Spatial agv = assetManager.loadModel("Models/AGV/AGV.obj"); 
-        Material mat_agv = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        //mat_agv.setColor("Color", ColorRGBA.White);
-        mat_agv.setTexture("DiffuseMap", assetManager.loadTexture("Models/AGV/Textures/agv.png"));
-        agv.setMaterial(mat_agv);
-        agv.setLocalTranslation(-50, 0, 0);
-        sceneNode.attachChild(agv);   
-        
-        Spatial truck = assetManager.loadModel("Models/Truck/Truck.obj"); 
-        Material mat_truck = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        //mat_agv.setColor("Color", ColorRGBA.White);
-        mat_truck.setTexture("DiffuseMap", assetManager.loadTexture("Models/Truck/Textures/truck.png"));
-        truck.setMaterial(mat_truck);
-        truck.setLocalTranslation(-55, 0, 0);
-        sceneNode.attachChild(truck);
-        
-        
+                
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
         sun.setDirection(new Vector3f(-.5f,-.5f,-.5f).normalizeLocal());
@@ -210,27 +196,46 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
     
     private void createRoads(Node sceneNode){
-        float roadWidth = 1.0f;
+        float roadWidth = 8f;
         
         Material roadmat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        roadmat.setColor("Color", ColorRGBA.Blue);
+        roadmat.setColor("Color", ColorRGBA.DarkGray);        
+        Material nodemat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        nodemat.setColor("Color", ColorRGBA.Red);
         
-        
+        Box box = new Box( Vector3f.ZERO, 0.5f,0.5f,0.5f);
         for(Pathfinding.Path p : Pathfinding.Pathfinder.Paths){
+            Geometry road = new Geometry("Box", box);
+            road.setMaterial(roadmat);
+
+            road.setLocalTranslation(   (p.getPointA().getPosition().x+p.getPointB().getPosition().x)/2, 
+                                        (p.getPointA().getPosition().y+p.getPointB().getPosition().y)/2, 
+                                        (p.getPointA().getPosition().z+p.getPointB().getPosition().z)/2);
+
+
+            Helpers.Vector3f diff = new Helpers.Vector3f(   p.getPointB().getPosition().x - p.getPointA().getPosition().x,
+                                                            p.getPointB().getPosition().y - p.getPointA().getPosition().y,
+                                                            p.getPointB().getPosition().z - p.getPointA().getPosition().z);
+            diff.normalize();
             
-            Mesh mesh = new Mesh();
-            mesh.setMode(Mesh.Mode.Lines);
-            mesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{  p.getPointA().getPosition().x, 
-                                                                        p.getPointA().getPosition().y, 
-                                                                        p.getPointA().getPosition().z, 
-                                                                        p.getPointB().getPosition().x, 
-                                                                        p.getPointB().getPosition().y, 
-                                                                        p.getPointB().getPosition().z});
-            mesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
-            Geometry l = new Geometry("line", mesh);
-            l.setMaterial(roadmat);
-            rootNode.attachChild(l);
             
+            road.setLocalScale( roadWidth,
+                                0.1f,
+                                Helpers.Vector3f.distance(p.getPointA().getPosition(), p.getPointB().getPosition()));
+            
+            road.setLocalRotation(new Quaternion().fromAngles(0f, (float) Math.atan2(-diff.x, -diff.z), 0f));
+            road.setMaterial(roadmat);
+            rootNode.attachChild(road);
+        }
+        for(Pathfinding.Node n : Pathfinding.Pathfinder.Nodes){
+            Geometry road = new Geometry("Box", box);
+            road.setMaterial(roadmat);
+
+            road.setLocalTranslation(   n.getPosition().x, 
+                                        n.getPosition().y+5, 
+                                        n.getPosition().z);
+            road.setMaterial(nodemat);
+            rootNode.attachChild(road);
         }
     }
     
@@ -247,12 +252,12 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         waterProcessor.setDistortionScale(0.15f);
         waterProcessor.setWaveSpeed(0.01f);
         
-        Quad quad = new Quad(4000,4000);
+        Quad quad = new Quad(10000,10000);
         quad.scaleTextureCoordinates(new Vector2f(6f,6f));
         
         water = new Geometry("water", quad);
         water.setLocalRotation(  new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X) );
-        water.setLocalTranslation(-2000, -6, 2000);
+        water.setLocalTranslation(-5000, -6, 5000);
         
         Material mat_water = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_water.setColor("Color", ColorRGBA.Blue);
@@ -266,7 +271,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         objMgr.update(tpf);
-        water.setLocalTranslation(cam.getLocation().x-2000, water.getLocalTranslation().y, cam.getLocation().z+2000);
+        water.setLocalTranslation(cam.getLocation().x-5000, water.getLocalTranslation().y, cam.getLocation().z+5000);
 
         //Set picard volume
         if(objMgr.boatList.size()>0){
