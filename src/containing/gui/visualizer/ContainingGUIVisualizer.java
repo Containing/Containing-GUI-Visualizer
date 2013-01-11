@@ -46,9 +46,9 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     AudioNode audio_ambient, audio_picard;
     @Override
     public void simpleInitApp() {
-        Pathfinding.Pathfinder.generateGrid();
+        Pathfinding.Pathfinder.generateArea();
         
-        
+
         sceneNode = new Node();
         containerNode = new Node();
 
