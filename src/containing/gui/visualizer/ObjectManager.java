@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * @author EightOneGulf
  */
 public class ObjectManager {
-    Spatial largeShipTPL, agvTPL, truckTPL, defaultErrorTPL;
+    Spatial largeShipTPL, agvTPL, truckTPL, locomotiveTPL, traincartTPL, defaultErrorTPL;
     Node rootNode, containerNode;
 
     
@@ -36,7 +36,7 @@ public class ObjectManager {
         this.containerNode = containerNode;
         
         loadModels(assetManager);
-        
+
         boatList = new ArrayList<VisualVehicle>();
         
         Spatial model = largeShipTPL.clone();
@@ -70,6 +70,18 @@ public class ObjectManager {
         truckTPL.setMaterial(mat_truck);
         truckTPL.scale(1.00f);
         
+        locomotiveTPL = assetManager.loadModel("Models/Locomotive/Locomotive.obj"); 
+        Material mat_locomotive = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat_locomotive.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
+        locomotiveTPL.setMaterial(mat_locomotive);
+        locomotiveTPL.scale(1.00f);
+        
+        traincartTPL = assetManager.loadModel("Models/Traincart/Traincart.obj"); 
+        Material mat_traincart = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat_traincart.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
+        traincartTPL.setMaterial(mat_traincart);
+        traincartTPL.scale(1.00f);
+        
         
         defaultErrorTPL = assetManager.loadModel("Models/Error/Error.obj"); 
         Material mat_error = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -84,10 +96,11 @@ public class ObjectManager {
            Vehicle.VehicleType type = base.GetVehicleType();
            
            Spatial model = defaultErrorTPL.clone();
-           
+
            if(type.equals(Vehicle.VehicleType.seaBoat)) model = this.largeShipTPL.clone();
            else if(type.equals(Vehicle.VehicleType.truck)) model = this.truckTPL.clone();
            else if(type.equals(Vehicle.VehicleType.AGV)) model = this.agvTPL.clone();
+           else if(type.equals(Vehicle.VehicleType.train)) model = this.locomotiveTPL.clone();
 
            VisualVehicle b = new VisualVehicle( model, 
                                                 containerNode, 
@@ -132,8 +145,8 @@ public class ObjectManager {
         return null;
     }
     */
-    
+
     public void update(float gameTime){
         for(VisualVehicle b : boatList)b.update(gameTime);
-    }   
+    }
 }

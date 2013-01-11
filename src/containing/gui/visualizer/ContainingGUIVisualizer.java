@@ -44,7 +44,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     Geometry water;
     ObjectManager objMgr;
     Node sceneNode, containerNode;
-    AudioNode audio_ambient, audio_picard;
+    AudioNode audio_ambient, audio_boat, audio_truck, audio_train;
     @Override
     public void simpleInitApp() {
         Pathfinding.Pathfinder.generateGrid();
@@ -82,28 +82,15 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         createWater(sceneNode);
         createHarbor(sceneNode);
         createRoads(sceneNode);
-        
-        audio_ambient = new AudioNode(assetManager, "Sounds/ambientLoop.ogg", false);
-        audio_ambient.setLooping(true);  // activate continuous playing
-        audio_ambient.setPositional(true);
-        audio_ambient.setLocalTranslation(Vector3f.ZERO.clone());
-        audio_ambient.setVolume(3);
-        rootNode.attachChild(audio_ambient);
-        
-        audio_picard = new AudioNode(assetManager, "Sounds/the_picard_song.ogg", false);
-        audio_picard.setLooping(true);  // activate continuous playing
-        audio_picard.setPositional(true);
-        audio_picard.setLocalTranslation(Vector3f.ZERO.clone());
-        audio_picard.setVolume(0);
-        rootNode.attachChild(audio_picard);
+        createAudio(rootNode);
+
 
         Logger.getLogger("").setLevel(Level.SEVERE);
-        //generateVehicles();
-
-        audio_ambient.play(); // play continuously!
-        audio_picard.play(); // play continuously!
+        generateVehicles();
     }
    
+    
+
     
     private int findLowestNeighbour(int i, int j, Vehicles.TransportVehicle boat, int maxheight){
         //Low edge
@@ -150,15 +137,13 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             XML.XMLBinder.GenerateContainerDatabase("C:/Users/EightOneGulf/Dropbox/containing/XML files/xml7.xml");
             //Database.dumpDatabase();
 
-             
-
             
             List<Vehicles.TransportVehicle> GetSeaBoats = Vehicles.MatchVehicles.GetTrucks();
             for( Vehicles.TransportVehicle b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
                 VisualVehicle bs = objMgr.addShip(b);
                 generateContainers(bs);
-                i+=75;
+                i+=150;
                 break;
             }
             
@@ -167,7 +152,16 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
                 VisualVehicle bs = objMgr.addShip(b);
                 generateContainers(bs);
-                i+=75;
+                i+=150;
+                break;
+            }
+            
+            GetSeaBoats = Vehicles.MatchVehicles.GetTrains();
+            for( Vehicles.TransportVehicle b : GetSeaBoats ){
+                b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
+                VisualVehicle bs = objMgr.addShip(b);
+                generateContainers(bs);
+                i+=150;
                 break;
             }
 
@@ -175,6 +169,42 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         } catch (Exception ex) {
             Logger.getLogger(ContainingGUIVisualizer.class.getName()).log(Level.SEVERE, null, ex);
         }    
+    }
+    
+    private void createAudio(Node node){
+        audio_ambient = new AudioNode(assetManager, "Sounds/ambientLoop.ogg", false);
+        audio_ambient.setLooping(true);  // activate continuous playing
+        audio_ambient.setPositional(true);
+        audio_ambient.setLocalTranslation(Vector3f.ZERO.clone());
+        audio_ambient.setVolume(1);
+        node.attachChild(audio_ambient);
+        
+        audio_boat = new AudioNode(assetManager, "Sounds/boat_ambient.ogg", false);
+        audio_boat.setLooping(true);  // activate continuous playing
+        audio_boat.setPositional(true);
+        audio_boat.setLocalTranslation(Vector3f.ZERO.clone());
+        audio_boat.setVolume(0);
+        node.attachChild(audio_boat);     
+        
+        audio_truck = new AudioNode(assetManager, "Sounds/truck_ambient.ogg", false);
+        audio_truck.setLooping(true);  // activate continuous playing
+        audio_truck.setPositional(true);
+        audio_truck.setLocalTranslation(Vector3f.ZERO.clone());
+        audio_truck.setVolume(0);
+        node.attachChild(audio_truck);     
+        
+        audio_train = new AudioNode(assetManager, "Sounds/train_ambient.ogg", false);
+        audio_train.setLooping(true);  // activate continuous playing
+        audio_train.setPositional(true);
+        audio_train.setLocalTranslation(Vector3f.ZERO.clone());
+        audio_train.setVolume(0);
+        node.attachChild(audio_train);
+        
+        
+        audio_ambient.play(); // play continuously!
+        audio_boat.play(); // play continuously!
+        audio_truck.play(); // play continuously!
+        audio_train.play(); // play continuously!
     }
     
     private void createHarbor(Node sceneNode){
@@ -245,8 +275,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                                         n.getPosition().z);
             road.setMaterial(nodemat);
             rootNode.attachChild(road);
-            
-            
+
             BitmapText helloText = new BitmapText(guiFont, false);
             helloText.setSize(5);
             helloText.setText(nodei + "");
@@ -292,24 +321,57 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         objMgr.update(tpf);
         water.setLocalTranslation(cam.getLocation().x-5000, water.getLocalTranslation().y, cam.getLocation().z+5000);
 
-        //Set picard volume
+        //Set vehicle volume
         if(objMgr.boatList.size()>0){
-            float leastDistance = 999999;
+            float leastDistance_boat = 999999;
+            float leastDistance_train = 999999;
+            float leastDistance_truck = 999999;
+            
             Helpers.Vector3f camPos = new Helpers.Vector3f(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
             
             for(VisualVehicle b : objMgr.boatList){
                 float curDist = Helpers.Vector3f.distance(camPos, b.getPosition());
-                if(curDist<leastDistance)leastDistance = curDist;
+                
+                if(b.GetVehicleType().equals(TransportVehicle.VehicleType.seaBoat)){
+                    if(curDist<leastDistance_boat)leastDistance_boat = curDist;
+                }
+                else if(b.GetVehicleType().equals(TransportVehicle.VehicleType.train)){
+                    if(curDist<leastDistance_train)leastDistance_train = curDist;
+                }
+                else if(b.GetVehicleType().equals(TransportVehicle.VehicleType.truck) ||
+                        b.GetVehicleType().equals(TransportVehicle.VehicleType.AGV)){
+                    if(curDist<leastDistance_truck)leastDistance_truck = curDist;
+                }
             }
+
             
+            //Set boat
             float maxVolume = 1f;
             float divider = 100f;
-            leastDistance/=divider;
-            maxVolume-=leastDistance;
+            leastDistance_boat/=divider;
+            maxVolume-=leastDistance_boat;
             if(maxVolume<0)maxVolume=0;
-            audio_picard.setVolume(maxVolume);
+            audio_boat.setVolume(maxVolume);
+            
+            //Set train
+            maxVolume = 1f;
+            divider = 100f;
+            leastDistance_train/=divider;
+            maxVolume-=leastDistance_train;
+            if(maxVolume<0)maxVolume=0;
+            audio_train.setVolume(maxVolume);
+            
+            //Set truck
+            maxVolume = 1f;
+            divider = 100f;
+            leastDistance_truck/=divider;
+            maxVolume-=leastDistance_truck;
+            if(maxVolume<0)maxVolume=0;
+            audio_truck.setVolume(maxVolume);
         }else{
-            audio_picard.setVolume(0);
+            audio_boat.setVolume(0);
+            audio_train.setVolume(0);
+            audio_truck.setVolume(0);
         }
     }    
     
