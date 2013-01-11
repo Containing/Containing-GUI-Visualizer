@@ -193,6 +193,11 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(1.3f));
         rootNode.addLight(al);
+        
+        
+        Spatial c = containing.gui.visualizer.Container.model.clone();
+        
+        sceneNode.attachChild(c);
     }
     
     private void createRoads(Node sceneNode){
@@ -228,6 +233,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             rootNode.attachChild(road);
         }
         for(Pathfinding.Node n : Pathfinding.Pathfinder.Nodes){
+            if(n==null)break;
             Geometry road = new Geometry("Box", box);
             road.setMaterial(roadmat);
 
