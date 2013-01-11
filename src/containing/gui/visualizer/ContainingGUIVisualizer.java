@@ -210,6 +210,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         nodemat.setColor("Color", ColorRGBA.Red);
 
         Box box = new Box( Vector3f.ZERO, 0.5f,0.5f,0.5f);
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         for(Pathfinding.Path p : Pathfinding.Pathfinder.Paths){
             Geometry road = new Geometry("Box", box);
             road.setMaterial(roadmat);
@@ -233,6 +234,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             road.setMaterial(roadmat);
             rootNode.attachChild(road);
         }
+        int nodei = 0;
         for(Pathfinding.Node n : Pathfinding.Pathfinder.Nodes){
             if(n==null)break;
             Geometry road = new Geometry("Box", box);
@@ -245,18 +247,15 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             rootNode.attachChild(road);
             
             
-            
-
-            
-            
+            BitmapText helloText = new BitmapText(guiFont, false);
+            helloText.setSize(5);
+            helloText.setText(nodei + "");
+            helloText.setLocalTranslation(n.getPosition().x,n.getPosition().y+10,  n.getPosition().z);
+            rootNode.attachChild(helloText);
+            nodei++;
         }
         
-            guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-            BitmapText helloText = new BitmapText(guiFont, false);
-            helloText.setSize(guiFont.getCharSet().getRenderedSize());
-            helloText.setText("Hello World");
-            helloText.setLocalTranslation(0,0, 0);
-            rootNode.attachChild(helloText);
+
     }
     
     private void createWater(Node sceneNode){
