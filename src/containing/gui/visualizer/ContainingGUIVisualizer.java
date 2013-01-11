@@ -11,6 +11,7 @@ import Vehicles.TransportVehicle;
 import Vehicles.Vehicle;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -46,7 +47,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     AudioNode audio_ambient, audio_picard;
     @Override
     public void simpleInitApp() {
-        Pathfinding.Pathfinder.generateArea();
+        Pathfinding.Pathfinder.generateGrid();
         
 
         sceneNode = new Node();
@@ -207,7 +208,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         roadmat.setColor("Color", ColorRGBA.DarkGray);        
         Material nodemat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         nodemat.setColor("Color", ColorRGBA.Red);
-        
+
         Box box = new Box( Vector3f.ZERO, 0.5f,0.5f,0.5f);
         for(Pathfinding.Path p : Pathfinding.Pathfinder.Paths){
             Geometry road = new Geometry("Box", box);
@@ -242,7 +243,20 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                                         n.getPosition().z);
             road.setMaterial(nodemat);
             rootNode.attachChild(road);
+            
+            
+            
+
+            
+            
         }
+        
+            guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+            BitmapText helloText = new BitmapText(guiFont, false);
+            helloText.setSize(guiFont.getCharSet().getRenderedSize());
+            helloText.setText("Hello World");
+            helloText.setLocalTranslation(0,0, 0);
+            rootNode.attachChild(helloText);
     }
     
     private void createWater(Node sceneNode){
