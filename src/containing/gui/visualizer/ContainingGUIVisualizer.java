@@ -47,7 +47,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     AudioNode audio_ambient, audio_boat, audio_truck, audio_train;
     @Override
     public void simpleInitApp() {
-        Pathfinding.Pathfinder.generateGrid();
+        Pathfinding.Pathfinder.generateArea();
         
 
         sceneNode = new Node();
@@ -62,7 +62,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         cam.setFrustumFar(50000);
         cam.onFrameChange();
         cam.setLocation(new Vector3f(-100,10,10));
-        flyCam.setMoveSpeed(50);
+        flyCam.setMoveSpeed(500);
+        cam.setLocation(new Vector3f(500, 50, 500));
         objMgr = new ObjectManager(sceneNode, containerNode, assetManager);
 
         //objMgr.addContainer(0, new Vector3f(0f, 0, 0));
@@ -208,12 +209,17 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
     
     private void createHarbor(Node sceneNode){
-        Box box = new Box( Vector3f.ZERO, 500,10,500);
+        float centerX = (Pathfinder.pathWidth*2*(Pathfinder.gapBetweenRoads+5)+Pathfinder.storageLenght)/2;
+        float centerZ = (Pathfinder.pathWidth*2*(Pathfinder.gapBetweenRoads+5)+Pathfinder.storageWidth)/2;
+        
+        Box box = new Box( new Vector3f(centerX, 0, centerZ), centerX,10,centerZ);
+        //Box box = new Box( Vector3f.ZERO, 500,10,500);
         Geometry harborblock = new Geometry("Box", box);
         Material harbormat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         harbormat.setTexture("DiffuseMap", assetManager.loadTexture("Models/Harbor/Textures/concrete.jpg"));
         harborblock.setMaterial(harbormat);
-        harborblock.setLocalTranslation(-520, -10, 0);
+        //harborblock.setLocalTranslation(-520, -10, 0);
+        harborblock.setLocalTranslation(0, -10, 0);
         sceneNode.attachChild(harborblock);
         
                 
@@ -232,7 +238,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
     
     private void createRoads(Node sceneNode){
-        float roadWidth = 8f;
+        float roadWidth = 3f;
         
         Material roadmat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         roadmat.setColor("Color", ColorRGBA.DarkGray);        
@@ -266,21 +272,22 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         }
         int nodei = 0;
         for(Pathfinding.Node n : Pathfinding.Pathfinder.Nodes){
-            if(n==null)break;
-            Geometry road = new Geometry("Box", box);
-            road.setMaterial(roadmat);
+            if(n!=null){
+                Geometry road = new Geometry("Box", box);
+                road.setMaterial(roadmat);
 
-            road.setLocalTranslation(   n.getPosition().x, 
-                                        n.getPosition().y+5, 
-                                        n.getPosition().z);
-            road.setMaterial(nodemat);
-            rootNode.attachChild(road);
+                road.setLocalTranslation(   n.getPosition().x, 
+                                            n.getPosition().y+5, 
+                                            n.getPosition().z);
+                road.setMaterial(nodemat);
+                rootNode.attachChild(road);
 
-            BitmapText helloText = new BitmapText(guiFont, false);
-            helloText.setSize(5);
-            helloText.setText(nodei + "");
-            helloText.setLocalTranslation(n.getPosition().x,n.getPosition().y+10,  n.getPosition().z);
-            rootNode.attachChild(helloText);
+                BitmapText helloText = new BitmapText(guiFont, false);
+                helloText.setSize(5);
+                helloText.setText(nodei + "");
+                helloText.setLocalTranslation(n.getPosition().x,n.getPosition().y+10,  n.getPosition().z);
+                rootNode.attachChild(helloText);
+            }
             nodei++;
         }
         
