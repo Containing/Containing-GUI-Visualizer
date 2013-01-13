@@ -47,7 +47,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     AudioNode audio_ambient, audio_boat, audio_truck, audio_train;
     @Override
     public void simpleInitApp() {
-        Pathfinding.Pathfinder.generateArea();
+        try { Pathfinding.Pathfinder.generateArea(); }
+        catch(Exception ex) {};
         
 
         sceneNode = new Node();
@@ -111,7 +112,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                 try {
                     int startHeight = findLowestNeighbour(i,j,boat,height-1);
                     
-                    Container c = boat.storage.peakContainer(i, j);
+                    //Container c = boat.storage.peakContainer(i, j);
                     
                     if(startHeight>boat.storage.Count(i, j))startHeight=boat.storage.Count(i, j);
                     
@@ -121,7 +122,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                                                     j*6f - length*6f/2 + 3f);
                         //objMgr.addContainer(c.getContainNr(), pos);
                        
-                        boat.addContainer(c.getContainNr(), pos);
+                        //boat.addContainer(c.getContainNr(), pos);
                     }
                 } catch (Exception ex) {
                     
@@ -244,7 +245,9 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         roadmat.setColor("Color", ColorRGBA.DarkGray);        
         Material nodemat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         nodemat.setColor("Color", ColorRGBA.Red);
-
+        Material parkinglotmat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        parkinglotmat.setColor("Color", ColorRGBA.Green);
+        
         Box box = new Box( Vector3f.ZERO, 0.5f,0.5f,0.5f);
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         for(Pathfinding.Path p : Pathfinding.Pathfinder.Paths){
@@ -290,7 +293,18 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             }
             nodei++;
         }
-        
+        for(Parkinglot.Parkinglot n : Pathfinding.Pathfinder.parkinglots){
+            if(n!=null){
+                Geometry road = new Geometry("Box", box);
+                road.setMaterial(roadmat);
+
+                road.setLocalTranslation(   n.node.getPosition().x, 
+                                            n.node.getPosition().y+5, 
+                                            n.node.getPosition().z);
+                road.setMaterial(parkinglotmat);
+                rootNode.attachChild(road);
+            }
+        }
 
     }
     
