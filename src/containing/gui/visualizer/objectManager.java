@@ -41,7 +41,9 @@ public class ObjectManager {
         
         Spatial model = largeShipTPL.clone();
         model.setLocalTranslation(1000, 0, 00);
-        this.rootNode.attachChild(model);
+        this.rootNode.attachChild(model);  
+        
+
         
     }
 

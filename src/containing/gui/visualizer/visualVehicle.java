@@ -63,8 +63,7 @@ public class VisualVehicle extends Vehicles.TransportVehicle {
         this.setPostion( new Helpers.Vector3f(  model.getLocalTranslation().x,
                                                 model.getLocalTranslation().y,
                                                 model.getLocalTranslation().z));
-        
-        
+
         privateContainerNode.move(new com.jme3.math.Vector3f(move.x, move.y, move.z));
         privateContainerNode.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(-move.x, -move.z), 0f));
     }

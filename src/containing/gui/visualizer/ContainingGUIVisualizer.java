@@ -40,7 +40,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     public static void main(String[] args) {
         new ContainingGUIVisualizer().start();
     }
-    
+
     Geometry water;
     ObjectManager objMgr;
     Node sceneNode, containerNode;
@@ -49,7 +49,6 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     public void simpleInitApp() {
         try { Pathfinding.Pathfinder.generateArea(); }
         catch(Exception ex) {};
-        
 
         sceneNode = new Node();
         containerNode = new Node();
@@ -59,7 +58,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
 
         sceneNode.attachChild(SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false));
         //sceneNode.attachChild(SkyFactory.createSky(assetManager, "Skybox/default.png", false));
-        
+
         cam.setFrustumFar(50000);
         cam.onFrameChange();
         cam.setLocation(new Vector3f(-100,10,10));
@@ -67,25 +66,10 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         cam.setLocation(new Vector3f(500, 50, 500));
         objMgr = new ObjectManager(sceneNode, containerNode, assetManager);
 
-        //objMgr.addContainer(0, new Vector3f(0f, 0, 0));
-        //objMgr.addContainer(1, new Vector3f(2.5f, 0, 0));
-        //objMgr.addShip(-1, new Vector3f(7.0f*2.5f, 0, 45));
-
-/*
-        inputManager.addMapping("Forward",  new KeyTrigger(KeyInput.KEY_U));
-        inputManager.addMapping("Reverse",  new KeyTrigger(KeyInput.KEY_J));
-        inputManager.addMapping("Left",  new KeyTrigger(KeyInput.KEY_H));
-        inputManager.addMapping("Right",  new KeyTrigger(KeyInput.KEY_K));
-        inputManager.addListener(actionListener, new String[]{"Forward"});
-        inputManager.addListener(actionListener, new String[]{"Reverse"});
-        inputManager.addListener(actionListener, new String[]{"Left"});
-        inputManager.addListener(actionListener, new String[]{"Right"});*/
-
         createWater(sceneNode);
         createHarbor(sceneNode);
         createRoads(sceneNode);
         createAudio(rootNode);
-
 
         Logger.getLogger("").setLevel(Level.SEVERE);
         generateVehicles();
@@ -130,7 +114,6 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             }            
         }
     }
-    
     
     private void generateVehicles(){
         int i = 0;
@@ -208,7 +191,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         audio_truck.play(); // play continuously!
         audio_train.play(); // play continuously!
     }
-    
+
     private void createHarbor(Node sceneNode){
         float centerX = (Pathfinder.pathWidth*2*(Pathfinder.gapBetweenRoads+5)+Pathfinder.storageLenght)/2;
         float centerZ = (Pathfinder.pathWidth*2*(Pathfinder.gapBetweenRoads+5)+Pathfinder.storageWidth)/2;
@@ -231,11 +214,18 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(1.3f));
         rootNode.addLight(al);
-        
-        
+
         Spatial c = containing.gui.visualizer.Container.model.clone();
-        
+
         sceneNode.attachChild(c);
+        
+        
+        Spatial craneLarge = assetManager.loadModel("Models/CraneLarge/CraneLarge.obj"); 
+        Material mat_ship = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat_ship.setTexture("DiffuseMap", assetManager.loadTexture("Models/ShipLarge/Textures/enterprise.png"));
+        craneLarge.setMaterial(mat_ship);
+        craneLarge.setLocalTranslation(1020, 0, 0);
+        sceneNode.attachChild(craneLarge); 
     }
     
     private void createRoads(Node sceneNode){
