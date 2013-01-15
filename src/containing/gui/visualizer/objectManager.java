@@ -27,8 +27,6 @@ public class ObjectManager {
 
     
     ArrayList<visualVehicle> boatList;
-    ArrayList<visualVehicle> agvList;
-    ArrayList<visualVehicle> truckList;
     
     
     public ObjectManager(Node rootNode, Node containerNode, AssetManager assetManager){
@@ -38,10 +36,6 @@ public class ObjectManager {
         loadModels(assetManager);
 
         boatList = new ArrayList<visualVehicle>();
-        
-        Spatial model = largeShipTPL.clone();
-        model.setLocalTranslation(1000, 0, 00);
-        this.rootNode.attachChild(model);
     }
 
     private void loadModels(AssetManager assetManager){
@@ -92,9 +86,10 @@ public class ObjectManager {
     
     public visualVehicle addShip(Vehicles.TransportVehicle base){
        try {
+           System.out.println("Adding ship");
            Vehicle.VehicleType type = base.GetVehicleType();
 
-           Spatial model = defaultErrorTPL.clone();
+           Spatial model = largeShipTPL.clone();
 
            if(type.equals(Vehicle.VehicleType.seaBoat)) model = this.largeShipTPL.clone();
            else if(type.equals(Vehicle.VehicleType.truck)) model = this.truckTPL.clone();
@@ -111,12 +106,16 @@ public class ObjectManager {
                                                 new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
             System.out.println(base.storage.Count());
             b.storage = base.storage;
-            //b.setDestination(base.getDestination());
-            b.setDestination(new Pathfinding.Node(1000,1000));
             b.setPostion(base.getPosition());
          
+            
+            System.out.println("Adding to rootnode");
+            System.out.println(model.getLocalTranslation().toString());
+            
             boatList.add(b);
             rootNode.attachChild(model);
+            
+            System.out.println(model.toString());
             
             return b;
        } catch (Exception ex) {

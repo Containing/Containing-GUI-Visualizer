@@ -66,9 +66,9 @@ public class ContainingGUIVisualizer extends SimpleApplication {
 
         cam.setFrustumFar(50000);
         cam.onFrameChange();
-        cam.setLocation(new Vector3f(-100,10,10));
+        cam.setLocation(new Vector3f(1581.5f,10,22.5f));
         flyCam.setMoveSpeed(500);
-        cam.setLocation(new Vector3f(500, 50, 500));
+        //cam.setLocation(new Vector3f(500, 50, 500));
         objMgr = new ObjectManager(sceneNode, containerNode, assetManager);
 
         createWater(sceneNode);
@@ -80,6 +80,15 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         //generateVehicles();
         
         connectNetwork();
+        try {
+            TransportVehicle boat = new TransportVehicle(new Date(), new Date(), "bedrijf", Vehicle.VehicleType.seaBoat, new Helpers.Vector3f(10,10,10), Pathfinder.Nodes[10]);
+            boat.setDestination(Pathfinder.Nodes[6]);
+            
+            objMgr.addShip(boat);
+        } catch (Exception ex) {
+            System.out.println(ex);
+            ex.printStackTrace();
+        }
     }
 
     private int findLowestNeighbour(int i, int j, Vehicles.TransportVehicle boat, int maxheight){
@@ -127,8 +136,9 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
     private void readNetwork(){
         byte[] data;
+       
         while((data=subscriber.recv(ZMQ.NOBLOCK)) != null) {
-            System.out.println(data[0]);
+            //System.out.println(data[0]);
             switch(data[0]){    //Operator identifier
                 case 0:         //Create new vehicle
                     
@@ -147,9 +157,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                     dest.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 25, 4));
                     
                     
-                    System.out.println(pos.toString());
-                    
-                    
+                    //System.out.println(pos.toString());
+                   
                     break;
                 case 2:         //Remove existing vehicle
                     
@@ -257,18 +266,6 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(1.3f));
         rootNode.addLight(al);
-
-        Spatial c = containing.gui.visualizer.Container.model.clone();
-
-        sceneNode.attachChild(c);
-        
-        
-        Spatial craneLarge = assetManager.loadModel("Models/CraneLarge/CraneLarge.obj"); 
-        Material mat_ship = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_ship.setTexture("DiffuseMap", assetManager.loadTexture("Models/ShipLarge/Textures/enterprise.png"));
-        craneLarge.setMaterial(mat_ship);
-        craneLarge.setLocalTranslation(1020, 0, 0);
-        sceneNode.attachChild(craneLarge); 
     }
     
     private void createRoads(Node sceneNode){

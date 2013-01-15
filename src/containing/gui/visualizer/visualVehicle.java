@@ -16,6 +16,8 @@ import com.jme3.math.Matrix3f;
 import com.jme3.scene.*;
 import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author EightOneGulf
@@ -38,21 +40,32 @@ public class visualVehicle extends Vehicles.TransportVehicle {
         model.setLocalTranslation(startPosition.getPosition().x, startPosition.getPosition().y, startPosition.getPosition().z);
         privateContainerNode.setLocalTranslation(model.getLocalTranslation());
     }    
-    
-    
-    
-    
-    public void update(float gameTime){
-        Vector3f nextNode = this.getDestination().getPosition();
 
-        Vector3f diff = new Vector3f(   nextNode.x - this.getPosition().x,
-                                        nextNode.y - this.getPosition().y,
-                                        nextNode.z - this.getPosition().z);
-        diff.normalize();
-        diff.x*=gameTime*5f;
-        diff.y*=gameTime*5f;
-        diff.z*=gameTime*5f;
-        move(diff);
+    public void update(float gameTime){
+        try {
+            super.update(gameTime);
+            
+            /*
+            try{
+                Vector3f nextNode = this.getDestination().getPosition();
+
+                Vector3f diff = new Vector3f(   nextNode.x - this.getPosition().x,
+                                                nextNode.y - this.getPosition().y,
+                                                nextNode.z - this.getPosition().z);
+                diff.normalize();
+
+                if(!(diff.x==0&&diff.y==0)){
+                    diff.x*=gameTime*5f;
+                    diff.y*=gameTime*5f;
+                    diff.z*=gameTime*5f;
+                    move(diff);
+                }
+            }catch(Exception e){
+                
+            }*/
+        } catch (Exception ex) {
+            Logger.getLogger(visualVehicle.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     
