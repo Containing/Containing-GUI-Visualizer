@@ -12,10 +12,26 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.*;
 import com.jme3.scene.shape.Box;
 
+/**
+ * 
+ * @author EightOneGulf
+ */
 public class Container {
+    /**
+     * 
+     */
     public int id;
+    /**
+     * 
+     */
     public static Spatial model;
     
+    /**
+     * 
+     * @param id container ID
+     * @param model model used for container
+     * @param position relative position within node
+     */
     public Container(int id, Spatial model, Vector3f position){
         model.setLocalTranslation(position);
         this.model = model;
