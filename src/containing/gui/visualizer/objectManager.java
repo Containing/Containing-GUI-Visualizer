@@ -29,6 +29,12 @@ public class ObjectManager {
     ArrayList<visualVehicle> boatList;
     
     
+    /**
+     * 
+     * @param rootNode node used for all vehicles
+     * @param containerNode node used for all containers
+     * @param assetManager assetmanager used to load models
+     */
     public ObjectManager(Node rootNode, Node containerNode, AssetManager assetManager){
         this.rootNode = rootNode;
         this.containerNode = containerNode;
@@ -84,6 +90,11 @@ public class ObjectManager {
 
     
     
+    /**
+     * 
+     * @param base transportvehicle to be displayed
+     * @return
+     */
     public visualVehicle addShip(Vehicles.TransportVehicle base){
        try {
            System.out.println("Adding ship");
@@ -144,6 +155,10 @@ public class ObjectManager {
     }
     */
 
+    /**
+     * 
+     * @param gameTime
+     */
     public void update(float gameTime){
         for(visualVehicle b : boatList)b.update(gameTime);
     }

@@ -28,6 +28,18 @@ public class visualVehicle extends Vehicles.TransportVehicle {
     private com.jme3.scene.Node privateContainerNode;    
     ArrayList<Container> containerList;
     
+    /**
+     * 
+     * @param model
+     * @param containerNode
+     * @param arrivalDate
+     * @param departureDate
+     * @param arrivalCompany
+     * @param vehicleType
+     * @param containerArraySize
+     * @param startPosition
+     * @throws Exception
+     */
     public visualVehicle(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vehicles.Vehicle.VehicleType vehicleType, Vector3f containerArraySize, Node startPosition)throws Exception{
         super(arrivalDate, departureDate, arrivalCompany, vehicleType, containerArraySize, startPosition);
         this.model = model;
@@ -70,6 +82,10 @@ public class visualVehicle extends Vehicles.TransportVehicle {
     
     
     
+    /**
+     * 
+     * @param move
+     */
     public void move(Vector3f move){
         model.move(new com.jme3.math.Vector3f(move.x, move.y, move.z));
         model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(-move.x, -move.z), 0f));
@@ -84,6 +100,11 @@ public class visualVehicle extends Vehicles.TransportVehicle {
     
 
     
+    /**
+     * 
+     * @param id
+     * @param position
+     */
     public void addContainer(int id, com.jme3.math.Vector3f position){
         Spatial model = Container.model.clone();
         
@@ -93,6 +114,11 @@ public class visualVehicle extends Vehicles.TransportVehicle {
         privateContainerNode.attachChild(container.model);
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     */
     public boolean destroyContainer(int id){
         for(int i = 0 ; i < containerList.size() ; i++){
             System.out.println(containerList.get(i).id);

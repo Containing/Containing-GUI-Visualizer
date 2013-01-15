@@ -37,49 +37,59 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.zeromq.ZMQ;
 
+/**
+ * 
+ * @author EightOneGulf
+ */
 public class ContainingGUIVisualizer extends SimpleApplication {
+    /**
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         new ContainingGUIVisualizer().start();
     }
 
     Geometry water;
-    ObjectManager objMgr;
-    Node sceneNode, containerNode;
-    AudioNode audio_ambient, audio_boat, audio_truck, audio_train;
+    ObjectManager objMgr;           //manages core objects, such as vehicles
+    Node sceneNode, containerNode;  //nodes for spatial models. sceneNode is rendered in waterreflection. containerNode isn't
+    AudioNode audio_ambient, audio_boat, audio_truck, audio_train;  
     
-    ZMQ.Context zmqContext;
-    ZMQ.Socket subscriber;
+    ZMQ.Context zmqContext; //Network objects
+    ZMQ.Socket subscriber;  //
     
+    /**
+     * Starts the jMonkey application
+     */
     @Override
     public void simpleInitApp() {
-        try { Pathfinding.Pathfinder.generateArea(); }
+        try { Pathfinding.Pathfinder.generateArea(); }  //Generate nodes and paths
         catch(Exception ex) {};
 
         sceneNode = new Node();
         containerNode = new Node();
-
         rootNode.attachChild(sceneNode);
         rootNode.attachChild(containerNode);
 
-        sceneNode.attachChild(SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false));
-        //sceneNode.attachChild(SkyFactory.createSky(assetManager, "Skybox/default.png", false));
+        sceneNode.attachChild(SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false));  //Create skybox
 
-        cam.setFrustumFar(50000);
-        cam.onFrameChange();
-        cam.setLocation(new Vector3f(1581.5f,10,22.5f));
         flyCam.setMoveSpeed(500);
-        //cam.setLocation(new Vector3f(500, 50, 500));
-        objMgr = new ObjectManager(sceneNode, containerNode, assetManager);
-
+        cam.setFrustumFar(50000);   //Set drawdistance
+        cam.setFrustumNear(1f);
+        cam.onFrameChange();        //Apply config to camera
+        cam.setLocation(new Vector3f(1581.5f,10,22.5f));
+        
+        
+        objMgr = new ObjectManager(sceneNode, containerNode, assetManager); 
         createWater(sceneNode);
         createHarbor(sceneNode);
         createRoads(sceneNode);
         createAudio(rootNode);
-
-        Logger.getLogger("").setLevel(Level.SEVERE);
-        //generateVehicles();
         
-        connectNetwork();
+        connectNetwork();   
+        
+        
+        
         try {
             TransportVehicle boat = new TransportVehicle(new Date(), new Date(), "bedrijf", Vehicle.VehicleType.seaBoat, new Helpers.Vector3f(10,10,10), Pathfinder.Nodes[10]);
             boat.setDestination(Pathfinder.Nodes[6]);
@@ -91,6 +101,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         }
     }
 
+    
     private int findLowestNeighbour(int i, int j, Vehicles.TransportVehicle boat, int maxheight){
         //Low edge
         
@@ -134,6 +145,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         subscriber.connect("tcp://127.0.0.1:6001");
         subscriber.subscribe("".getBytes());
     }
+    
     private void readNetwork(){
         byte[] data;
        
@@ -366,6 +378,10 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
 
     
+    /**
+     * 
+     * @param tpf
+     */
     @Override
     public void simpleUpdate(float tpf) {
         readNetwork();
