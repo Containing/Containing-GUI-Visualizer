@@ -20,13 +20,13 @@ import java.util.ArrayList;
  *
  * @author EightOneGulf
  */
-public class VisualVehicle extends Vehicles.TransportVehicle {
+public class visualVehicle extends Vehicles.TransportVehicle {
     private Spatial model;
     
     private com.jme3.scene.Node privateContainerNode;    
     ArrayList<Container> containerList;
     
-    public VisualVehicle(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vehicles.Vehicle.VehicleType vehicleType, Vector3f containerArraySize, Node startPosition)throws Exception{
+    public visualVehicle(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vehicles.Vehicle.VehicleType vehicleType, Vector3f containerArraySize, Node startPosition)throws Exception{
         super(arrivalDate, departureDate, arrivalCompany, vehicleType, containerArraySize, startPosition);
         this.model = model;
         this.privateContainerNode = new com.jme3.scene.Node();
@@ -43,11 +43,11 @@ public class VisualVehicle extends Vehicles.TransportVehicle {
     
     
     public void update(float gameTime){
-        //Vector3f destination = this.getDestination().getPosition();
-        Vector3f destination = new Vector3f(1000,0,1000);
-        Vector3f diff = new Vector3f(   destination.x - this.getPosition().x,
-                                        destination.y - this.getPosition().y,
-                                        destination.z - this.getPosition().z);
+        Vector3f nextNode = this.getDestination().getPosition();
+
+        Vector3f diff = new Vector3f(   nextNode.x - this.getPosition().x,
+                                        nextNode.y - this.getPosition().y,
+                                        nextNode.z - this.getPosition().z);
         diff.normalize();
         diff.x*=gameTime*5f;
         diff.y*=gameTime*5f;

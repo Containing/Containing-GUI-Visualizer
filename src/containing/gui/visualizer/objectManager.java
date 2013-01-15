@@ -26,9 +26,9 @@ public class ObjectManager {
     Node rootNode, containerNode;
 
     
-    ArrayList<VisualVehicle> boatList;
-    ArrayList<VisualVehicle> agvList;
-    ArrayList<VisualVehicle> truckList;
+    ArrayList<visualVehicle> boatList;
+    ArrayList<visualVehicle> agvList;
+    ArrayList<visualVehicle> truckList;
     
     
     public ObjectManager(Node rootNode, Node containerNode, AssetManager assetManager){
@@ -37,14 +37,11 @@ public class ObjectManager {
         
         loadModels(assetManager);
 
-        boatList = new ArrayList<VisualVehicle>();
+        boatList = new ArrayList<visualVehicle>();
         
         Spatial model = largeShipTPL.clone();
         model.setLocalTranslation(1000, 0, 00);
-        this.rootNode.attachChild(model);  
-        
-
-        
+        this.rootNode.attachChild(model);
     }
 
     private void loadModels(AssetManager assetManager){
@@ -93,10 +90,10 @@ public class ObjectManager {
 
     
     
-    public VisualVehicle addShip(Vehicles.TransportVehicle base){
+    public visualVehicle addShip(Vehicles.TransportVehicle base){
        try {
            Vehicle.VehicleType type = base.GetVehicleType();
-           
+
            Spatial model = defaultErrorTPL.clone();
 
            if(type.equals(Vehicle.VehicleType.seaBoat)) model = this.largeShipTPL.clone();
@@ -104,7 +101,7 @@ public class ObjectManager {
            else if(type.equals(Vehicle.VehicleType.AGV)) model = this.agvTPL.clone();
            else if(type.equals(Vehicle.VehicleType.train)) model = this.locomotiveTPL.clone();
 
-           VisualVehicle b = new VisualVehicle( model, 
+           visualVehicle b = new visualVehicle( model, 
                                                 containerNode, 
                                                 base.GetArrivalDate(), 
                                                 base.GetDepartureDate(), 
@@ -130,13 +127,13 @@ public class ObjectManager {
 
     
     /*
-    public VisualVehicle addShip(int id, Vector3f position){
+    public visualVehicle addShip(int id, Vector3f position){
         try {
             Spatial model = largeShipTPL.clone();
             model.setLocalTranslation(position);
             
             Node containerNode = new Node();
-            VisualVehicle b = new VisualVehicle(model, containerNode, new Date(), new Date(), "Transportcompany", new Helpers.Vector3f(5,5,5), new Pathfinding.Node(10, 10));
+            visualVehicle b = new visualVehicle(model, containerNode, new Date(), new Date(), "Transportcompany", new Helpers.Vector3f(5,5,5), new Pathfinding.Node(10, 10));
             boatList.add(b);
             rootNode.attachChild(model);
 
@@ -149,6 +146,6 @@ public class ObjectManager {
     */
 
     public void update(float gameTime){
-        for(VisualVehicle b : boatList)b.update(gameTime);
+        for(visualVehicle b : boatList)b.update(gameTime);
     }
 }

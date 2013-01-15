@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.zeromq.ZMQ;
 
 public class ContainingGUIVisualizer extends SimpleApplication {
     public static void main(String[] args) {
@@ -45,6 +46,10 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     ObjectManager objMgr;
     Node sceneNode, containerNode;
     AudioNode audio_ambient, audio_boat, audio_truck, audio_train;
+    
+    ZMQ.Context zmqContext;
+    ZMQ.Socket subscriber;
+    
     @Override
     public void simpleInitApp() {
         try { Pathfinding.Pathfinder.generateArea(); }
@@ -72,12 +77,11 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         createAudio(rootNode);
 
         Logger.getLogger("").setLevel(Level.SEVERE);
-        generateVehicles();
+        //generateVehicles();
+        
+        connectNetwork();
     }
-   
-    
 
-    
     private int findLowestNeighbour(int i, int j, Vehicles.TransportVehicle boat, int maxheight){
         //Low edge
         
@@ -86,7 +90,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         return maxheight;
     }
     
-    private void generateContainers(VisualVehicle boat){
+    private void generateContainers(visualVehicle boat){
         int width = boat.storage.getWidth();
         int length = boat.storage.getLength();
         int height = boat.storage.getHeight();
@@ -115,6 +119,45 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         }
     }
     
+    private void connectNetwork(){
+        zmqContext = ZMQ.context(1);
+        subscriber = zmqContext.socket(ZMQ.SUB);
+        subscriber.connect("tcp://127.0.0.1:6001");
+        subscriber.subscribe("".getBytes());
+    }
+    private void readNetwork(){
+        byte[] data;
+        while((data=subscriber.recv(ZMQ.NOBLOCK)) != null) {
+            System.out.println(data[0]);
+            switch(data[0]){    //Operator identifier
+                case 0:         //Create new vehicle
+                    
+                    break;
+                case 1:         //Update existing vehicle
+                    int id = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+                    
+                    Helpers.Vector3f pos = new Helpers.Vector3f();
+                    pos.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 5, 4));
+                    pos.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 9, 4));
+                    pos.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13, 4));
+                                     
+                    Helpers.Vector3f dest = new Helpers.Vector3f();
+                    dest.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17, 4));
+                    dest.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 21, 4));
+                    dest.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 25, 4));
+                    
+                    
+                    System.out.println(pos.toString());
+                    
+                    
+                    break;
+                case 2:         //Remove existing vehicle
+                    
+                    break;
+            }
+        }
+    }
+    
     private void generateVehicles(){
         int i = 0;
         try {
@@ -126,7 +169,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             List<Vehicles.TransportVehicle> GetSeaBoats = Vehicles.MatchVehicles.GetTrucks();
             for( Vehicles.TransportVehicle b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
-                VisualVehicle bs = objMgr.addShip(b);
+                visualVehicle bs = objMgr.addShip(b);
                 generateContainers(bs);
                 i+=150;
                 break;
@@ -135,7 +178,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             GetSeaBoats = Vehicles.MatchVehicles.GetSeaBoats();
             for( Vehicles.TransportVehicle b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
-                VisualVehicle bs = objMgr.addShip(b);
+                visualVehicle bs = objMgr.addShip(b);
                 generateContainers(bs);
                 i+=150;
                 break;
@@ -144,7 +187,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             GetSeaBoats = Vehicles.MatchVehicles.GetTrains();
             for( Vehicles.TransportVehicle b : GetSeaBoats ){
                 b.setPostion( new Helpers.Vector3f(b.getPosition().x + i, b.getPosition().y, b.getPosition().z) );
-                VisualVehicle bs = objMgr.addShip(b);
+                visualVehicle bs = objMgr.addShip(b);
                 generateContainers(bs);
                 i+=150;
                 break;
@@ -295,7 +338,6 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                 rootNode.attachChild(road);
             }
         }
-
     }
     
     private void createWater(Node sceneNode){
@@ -329,6 +371,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     
     @Override
     public void simpleUpdate(float tpf) {
+        readNetwork();
+        
         objMgr.update(tpf);
         water.setLocalTranslation(cam.getLocation().x-5000, water.getLocalTranslation().y, cam.getLocation().z+5000);
 
@@ -340,7 +384,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             
             Helpers.Vector3f camPos = new Helpers.Vector3f(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
             
-            for(VisualVehicle b : objMgr.boatList){
+            for(visualVehicle b : objMgr.boatList){
                 float curDist = Helpers.Vector3f.distance(camPos, b.getPosition());
                 
                 if(b.GetVehicleType().equals(TransportVehicle.VehicleType.seaBoat)){
