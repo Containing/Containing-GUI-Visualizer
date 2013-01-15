@@ -43,11 +43,11 @@ public class VisualVehicle extends Vehicles.TransportVehicle {
     
     
     public void update(float gameTime){
-        //Vector3f destination = this.getDestination().getPosition();
-        Vector3f destination = new Vector3f(1000,0,1000);
-        Vector3f diff = new Vector3f(   destination.x - this.getPosition().x,
-                                        destination.y - this.getPosition().y,
-                                        destination.z - this.getPosition().z);
+        Vector3f nextNode = this.getDestination().getPosition();
+
+        Vector3f diff = new Vector3f(   nextNode.x - this.getPosition().x,
+                                        nextNode.y - this.getPosition().y,
+                                        nextNode.z - this.getPosition().z);
         diff.normalize();
         diff.x*=gameTime*5f;
         diff.y*=gameTime*5f;
