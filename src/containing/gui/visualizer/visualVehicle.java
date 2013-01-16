@@ -55,8 +55,15 @@ public class visualVehicle extends Vehicles.TransportVehicle {
 
     public void update(float gameTime){
         try {
+            Vector3f diff = new Vector3f(this.position.x,this.position.y,this.position.z);
             super.update(gameTime);
-            
+            diff.x-=this.position.x;
+            diff.y-=this.position.y;
+            diff.z-=this.position.z;
+            diff.normalize();
+
+            this.model.setLocalTranslation(this.position.x, this.position.y, this.position.z);
+            model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(diff.x, diff.z), 0f));
             /*
             try{
                 Vector3f nextNode = this.getDestination().getPosition();

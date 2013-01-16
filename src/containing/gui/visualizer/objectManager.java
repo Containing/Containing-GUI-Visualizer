@@ -118,11 +118,14 @@ public class ObjectManager {
             System.out.println(base.storage.Count());
             b.storage = base.storage;
             b.setPostion(base.getPosition());
-         
+
             
+            if(base.getDestination()!=null)
+                b.setDestination( base.getDestination() );
+
             System.out.println("Adding to rootnode");
             System.out.println(model.getLocalTranslation().toString());
-            
+
             boatList.add(b);
             rootNode.attachChild(model);
             

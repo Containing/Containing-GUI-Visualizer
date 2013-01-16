@@ -54,9 +54,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     ObjectManager objMgr;           //manages core objects, such as vehicles
     Node sceneNode, containerNode;  //nodes for spatial models. sceneNode is rendered in waterreflection. containerNode isn't
     AudioNode audio_ambient, audio_boat, audio_truck, audio_train;  
-    
-    ZMQ.Context zmqContext; //Network objects
-    ZMQ.Socket subscriber;  //
+   
+    netListener netlistener;
     
     /**
      * Starts the jMonkey application
@@ -86,15 +85,17 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         createRoads(sceneNode);
         createAudio(rootNode);
         
-        connectNetwork();   
+
+        netlistener = new netListener(objMgr);
+        netlistener.connect();
         
         
         
         try {
-            TransportVehicle boat = new TransportVehicle(new Date(), new Date(), "bedrijf", Vehicle.VehicleType.seaBoat, new Helpers.Vector3f(10,10,10), Pathfinder.Nodes[10]);
-            boat.setDestination(Pathfinder.Nodes[6]);
-            
+            TransportVehicle boat = new TransportVehicle(new Date(), new Date(), "bedrijf", Vehicle.VehicleType.seaBoat, new Helpers.Vector3f(10,10,10), Pathfinder.Nodes[172]);
+            boat.setDestination(Pathfinder.Nodes[152]);
             objMgr.addShip(boat);
+            
         } catch (Exception ex) {
             System.out.println(ex);
             ex.printStackTrace();
@@ -138,46 +139,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
             }            
         }
     }
-    
-    private void connectNetwork(){
-        zmqContext = ZMQ.context(1);
-        subscriber = zmqContext.socket(ZMQ.SUB);
-        subscriber.connect("tcp://127.0.0.1:6001");
-        subscriber.subscribe("".getBytes());
-    }
-    
-    private void readNetwork(){
-        byte[] data;
-       
-        while((data=subscriber.recv(ZMQ.NOBLOCK)) != null) {
-            //System.out.println(data[0]);
-            switch(data[0]){    //Operator identifier
-                case 0:         //Create new vehicle
-                    
-                    break;
-                case 1:         //Update existing vehicle
-                    int id = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
-                    
-                    Helpers.Vector3f pos = new Helpers.Vector3f();
-                    pos.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 5, 4));
-                    pos.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 9, 4));
-                    pos.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13, 4));
-                                     
-                    Helpers.Vector3f dest = new Helpers.Vector3f();
-                    dest.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17, 4));
-                    dest.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 21, 4));
-                    dest.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 25, 4));
-                    
-                    
-                    //System.out.println(pos.toString());
-                   
-                    break;
-                case 2:         //Remove existing vehicle
-                    
-                    break;
-            }
-        }
-    }
+
     
     private void generateVehicles(){
         int i = 0;
@@ -384,7 +346,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
      */
     @Override
     public void simpleUpdate(float tpf) {
-        readNetwork();
+        netlistener.readNetwork();
         
         objMgr.update(tpf);
         water.setLocalTranslation(cam.getLocation().x-5000, water.getLocalTranslation().y, cam.getLocation().z+5000);
