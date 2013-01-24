@@ -103,8 +103,9 @@ public class netListener {
 
         try {
             //Create new vehicle
-            TransportVehicle v = new TransportVehicle(new Date(), new Date(), "HenkTransport", type, storage, Pathfinder.findClosestNode( pos ) );
-            v.setDestination(Pathfinder.findClosestNode(pos));
+            //TransportVehicle v = new TransportVehicle(new Date(), new Date(), "HenkTransport", type, storage, Pathfinder.findClosestNode( pos ) );
+            TransportVehicle v = new TransportVehicle(new Date(), new Date(), "HenkTransport", type, storage, Pathfinder.Nodes[146] );
+            v.setDestination( Pathfinder.Nodes[150] );
             objMgr.addShip(v);
         } catch (Exception ex) {
             Logger.getLogger(ContainingGUIVisualizer.class.getName()).log(Level.SEVERE, null, ex);

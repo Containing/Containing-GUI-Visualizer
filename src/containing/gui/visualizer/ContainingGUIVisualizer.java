@@ -86,6 +86,24 @@ public class ContainingGUIVisualizer extends SimpleApplication {
 
         netlistener = new netListener(objMgr);
         netlistener.connect();
+        
+        
+        
+        /*
+        Helpers.Vector3f storage = new Helpers.Vector3f();
+        storage.x = 5;
+        storage.y = 5;
+        storage.z = 5;
+        TransportVehicle v;
+        try {
+            v = new TransportVehicle(new Date(), new Date(), "HenkTransport", Vehicles.TransportVehicle.VehicleType.seaBoat, storage, Pathfinder.Nodes[146] );
+            v.setDestination(Pathfinder.Nodes[147]);
+            objMgr.addShip(v);
+        } catch (Exception ex) {
+            Logger.getLogger(ContainingGUIVisualizer.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        //v.setDestination(Pathfinder.findClosestNode(pos));
+        
     }
 
     
