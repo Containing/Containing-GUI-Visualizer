@@ -36,7 +36,7 @@ public class netListener {
         byte[] data;
 
         while((data=subscriber.recv(ZMQ.NOBLOCK)) != null) {
-            //System.out.println(data[0]);
+            System.out.println(data[0]);
 
             
             switch(data[0]){    //Operator identifier

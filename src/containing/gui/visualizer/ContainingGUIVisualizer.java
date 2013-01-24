@@ -78,28 +78,14 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         cam.onFrameChange();        //Apply config to camera
         cam.setLocation(new Vector3f(1581.5f,10,22.5f));
         
-        
         objMgr = new objectManager(sceneNode, containerNode, assetManager); 
         createWater(sceneNode);
         createHarbor(sceneNode);
         createRoads(sceneNode);
         createAudio(rootNode);
-        
 
         netlistener = new netListener(objMgr);
         netlistener.connect();
-        
-        
-        
-        try {
-            TransportVehicle boat = new TransportVehicle(new Date(), new Date(), "bedrijf", Vehicle.VehicleType.seaBoat, new Helpers.Vector3f(10,10,10), Pathfinder.Nodes[172]);
-            boat.setDestination(Pathfinder.Nodes[152]);
-            objMgr.addShip(boat);
-            
-        } catch (Exception ex) {
-            System.out.println(ex);
-            ex.printStackTrace();
-        }
     }
 
     
