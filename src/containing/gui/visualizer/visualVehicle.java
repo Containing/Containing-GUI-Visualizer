@@ -26,7 +26,7 @@ public class visualVehicle extends Vehicles.TransportVehicle {
     private Spatial model;
     
     private com.jme3.scene.Node privateContainerNode;    
-    ArrayList<Container> containerList;
+    ArrayList<container> containerList;
     
     /**
      * 
@@ -46,7 +46,7 @@ public class visualVehicle extends Vehicles.TransportVehicle {
         this.privateContainerNode = new com.jme3.scene.Node();
         containerNode.attachChild(privateContainerNode);
         
-        containerList = new ArrayList<Container>();
+        containerList = new ArrayList<container>();
 
         
         model.setLocalTranslation(startPosition.getPosition().x, startPosition.getPosition().y, startPosition.getPosition().z);
@@ -113,9 +113,9 @@ public class visualVehicle extends Vehicles.TransportVehicle {
      * @param position
      */
     public void addContainer(int id, com.jme3.math.Vector3f position){
-        Spatial model = Container.model.clone();
+        Spatial model = container.model.clone();
         
-        Container container = new Container(id, model, position);
+        container container = new container(id, model, position);
         containerList.add(container);
         System.out.println("add container");
         privateContainerNode.attachChild(container.model);

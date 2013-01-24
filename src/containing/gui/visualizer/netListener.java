@@ -15,9 +15,9 @@ public class netListener {
     ZMQ.Context zmqContext; //Network objects
     ZMQ.Socket subscriber;  //
 
-    ObjectManager objMgr;
+    objectManager objMgr;
 
-    public netListener(ObjectManager objMgr){
+    public netListener(objectManager objMgr){
         zmqContext = ZMQ.context(1);
         subscriber = zmqContext.socket(ZMQ.SUB);
         this.objMgr = objMgr;

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  *
  * @author EightOneGulf
  */
-public class ObjectManager {
+public class objectManager {
     Spatial largeShipTPL, agvTPL, truckTPL, locomotiveTPL, traincartTPL, defaultErrorTPL;
     Node rootNode, containerNode;
 
@@ -35,7 +35,7 @@ public class ObjectManager {
      * @param containerNode node used for all containers
      * @param assetManager assetmanager used to load models
      */
-    public ObjectManager(Node rootNode, Node containerNode, AssetManager assetManager){
+    public objectManager(Node rootNode, Node containerNode, AssetManager assetManager){
         this.rootNode = rootNode;
         this.containerNode = containerNode;
         
@@ -45,11 +45,11 @@ public class ObjectManager {
     }
 
     private void loadModels(AssetManager assetManager){
-        Container.model = assetManager.loadModel("Models/Container/Container.obj"); 
+        container.model = assetManager.loadModel("Models/Container/Container.obj"); 
         Material mat_default = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_default.setColor("Color", ColorRGBA.White);
         mat_default.setTexture("ColorMap", assetManager.loadTexture("Models/Container/Textures/EpicTransport.png"));
-        Container.model.setMaterial(mat_default);
+        container.model.setMaterial(mat_default);
         
         largeShipTPL = assetManager.loadModel("Models/ShipLarge/ShipLarge.obj"); 
         Material mat_ship = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -133,7 +133,7 @@ public class ObjectManager {
             
             return b;
        } catch (Exception ex) {
-           Logger.getLogger(ObjectManager.class.getName()).log(Level.SEVERE, null, ex);
+           Logger.getLogger(objectManager.class.getName()).log(Level.SEVERE, null, ex);
        }
        return null;
     }

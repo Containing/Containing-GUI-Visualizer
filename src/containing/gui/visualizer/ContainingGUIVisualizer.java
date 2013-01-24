@@ -51,7 +51,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     }
 
     Geometry water;
-    ObjectManager objMgr;           //manages core objects, such as vehicles
+    objectManager objMgr;           //manages core objects, such as vehicles
     Node sceneNode, containerNode;  //nodes for spatial models. sceneNode is rendered in waterreflection. containerNode isn't
     AudioNode audio_ambient, audio_boat, audio_truck, audio_train;  
    
@@ -79,7 +79,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         cam.setLocation(new Vector3f(1581.5f,10,22.5f));
         
         
-        objMgr = new ObjectManager(sceneNode, containerNode, assetManager); 
+        objMgr = new objectManager(sceneNode, containerNode, assetManager); 
         createWater(sceneNode);
         createHarbor(sceneNode);
         createRoads(sceneNode);

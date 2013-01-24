@@ -16,7 +16,7 @@ import com.jme3.scene.shape.Box;
  * 
  * @author EightOneGulf
  */
-public class Container {
+public class container {
     /**
      * 
      */
@@ -32,7 +32,7 @@ public class Container {
      * @param model model used for container
      * @param position relative position within node
      */
-    public Container(int id, Spatial model, Vector3f position){
+    public container(int id, Spatial model, Vector3f position){
         model.setLocalTranslation(position);
         this.model = model;
         this.id = id;
