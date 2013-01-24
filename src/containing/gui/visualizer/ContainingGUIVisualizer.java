@@ -63,7 +63,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         try { Pathfinding.Pathfinder.generateArea(); }  //Generate nodes and paths
-        catch(Exception ex) {};
+        catch(Exception ex) {System.out.println("Error:\n" + ex);};
 
         sceneNode = new Node();
         containerNode = new Node();
@@ -254,28 +254,31 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         
         Box box = new Box( Vector3f.ZERO, 0.5f,0.5f,0.5f);
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        System.out.println("Pathfinding.Pathfinder.Paths: "+ Pathfinding.Pathfinder.Paths);
         for(Pathfinding.Path p : Pathfinding.Pathfinder.Paths){
-            Geometry road = new Geometry("Box", box);
-            road.setMaterial(roadmat);
+            if (p!=null){
+                Geometry road = new Geometry("Box", box);
+                road.setMaterial(roadmat);
 
-            road.setLocalTranslation(   (p.getPointA().getPosition().x+p.getPointB().getPosition().x)/2, 
-                                        (p.getPointA().getPosition().y+p.getPointB().getPosition().y)/2, 
-                                        (p.getPointA().getPosition().z+p.getPointB().getPosition().z)/2);
+                road.setLocalTranslation(   (p.getPointA().getPosition().x+p.getPointB().getPosition().x)/2, 
+                                            (p.getPointA().getPosition().y+p.getPointB().getPosition().y)/2, 
+                                            (p.getPointA().getPosition().z+p.getPointB().getPosition().z)/2);
 
 
-            Helpers.Vector3f diff = new Helpers.Vector3f(   p.getPointB().getPosition().x - p.getPointA().getPosition().x,
-                                                            p.getPointB().getPosition().y - p.getPointA().getPosition().y,
-                                                            p.getPointB().getPosition().z - p.getPointA().getPosition().z);
-            diff.normalize();
-            
-            
-            road.setLocalScale( roadWidth,
-                                0.1f,
-                                Helpers.Vector3f.distance(p.getPointA().getPosition(), p.getPointB().getPosition()));
-            
-            road.setLocalRotation(new Quaternion().fromAngles(0f, (float) Math.atan2(-diff.x, -diff.z), 0f));
-            road.setMaterial(roadmat);
-            rootNode.attachChild(road);
+                Helpers.Vector3f diff = new Helpers.Vector3f(   p.getPointB().getPosition().x - p.getPointA().getPosition().x,
+                                                                p.getPointB().getPosition().y - p.getPointA().getPosition().y,
+                                                                p.getPointB().getPosition().z - p.getPointA().getPosition().z);
+                diff.normalize();
+
+
+                road.setLocalScale( roadWidth,
+                                    0.1f,
+                                    Helpers.Vector3f.distance(p.getPointA().getPosition(), p.getPointB().getPosition()));
+
+                road.setLocalRotation(new Quaternion().fromAngles(0f, (float) Math.atan2(-diff.x, -diff.z), 0f));
+                road.setMaterial(roadmat);
+                rootNode.attachChild(road);
+            }
         }
         int nodei = 0;
         for(Pathfinding.Node n : Pathfinding.Pathfinder.Nodes){
