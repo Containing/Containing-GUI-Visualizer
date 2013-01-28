@@ -43,14 +43,13 @@ public class visualVehicle extends Vehicles.TransportVehicle {
     public visualVehicle(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vehicles.Vehicle.VehicleType vehicleType, Vector3f containerArraySize, Node startPosition)throws Exception{
         super(arrivalDate, departureDate, arrivalCompany, vehicleType, containerArraySize, startPosition, null);
         this.speed *= 10;
-        
+
         this.model = model;
         this.privateContainerNode = new com.jme3.scene.Node();
         containerNode.attachChild(privateContainerNode);
-        
+
         containerList = new ArrayList<container>();
 
-        
         model.setLocalTranslation(startPosition.getPosition().x, startPosition.getPosition().y, startPosition.getPosition().z);
         privateContainerNode.setLocalTranslation(model.getLocalTranslation());
     }    
@@ -68,24 +67,6 @@ public class visualVehicle extends Vehicles.TransportVehicle {
                 diff.normalize();
                 model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(diff.x, diff.z), 0f));
             }
-            /*
-            try{
-                Vector3f nextNode = this.getDestination().getPosition();
-
-                Vector3f diff = new Vector3f(   nextNode.x - this.getPosition().x,
-                                                nextNode.y - this.getPosition().y,
-                                                nextNode.z - this.getPosition().z);
-                diff.normalize();
-
-                if(!(diff.x==0&&diff.y==0)){
-                    diff.x*=gameTime*5f;
-                    diff.y*=gameTime*5f;
-                    diff.z*=gameTime*5f;
-                    move(diff);
-                }
-            }catch(Exception e){
-                
-            }*/
         } catch (Exception ex) {
             Logger.getLogger(visualVehicle.class.getName()).log(Level.SEVERE, null, ex);
         }
