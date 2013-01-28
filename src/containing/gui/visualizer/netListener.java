@@ -1,5 +1,6 @@
 package containing.gui.visualizer;
 
+import Helpers.Vector3f;
 import Pathfinding.Pathfinder;
 import Vehicles.TransportVehicle;
 import java.util.Date;
@@ -47,6 +48,15 @@ public class netListener {
                     break;
                 case 2:         //Remove existing vehicle
                     readNetwork_destroyVehicle(data); 
+                    break;
+                case 3:         //Create storage
+                    readNetwork_createStorage(data); 
+                    break;
+                case 4:         //Remove container from storgae
+                    readNetwork_removeContainerFromStorage(data); 
+                    break;
+                case 5:         //Add container to storgae
+                    readNetwork_addContainerOnStorage(data); 
                     break;
             }
         }
@@ -130,8 +140,37 @@ public class netListener {
     }
     
     private void readNetwork_destroyVehicle(byte[] data){
-        int id;
-        id = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
-        objMgr.destroyVehicle(id);
+        objMgr.destroyVehicle(Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4)));
+    }
+    
+    private void readNetwork_createStorage(byte[] data){
+        int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+        int containerCount = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 5, 9));
+        
+        for (int i = 0; i < containerCount; i++) {
+            int ContainerId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 9+16*i, 4));
+            Helpers.Vector3f position = new Vector3f();
+            position.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13+16*i, 4));
+            position.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17+16*i, 4));
+            position.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 21+16*i, 4));
+        }
+        // sync stuff
+    }
+    
+    private void readNetwork_addContainerOnStorage(byte[] data){
+        int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+        int containerId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 5, 9));
+        Helpers.Vector3f position = new Vector3f();
+        position.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 9, 4));
+        position.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13, 4));
+        position.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17, 4));
+
+        // sync stuff
+    }
+    
+    private void readNetwork_removeContainerFromStorage(byte[] data){
+        int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+        int containerId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 5, 9));
+        // sync stuff
     }
 }
