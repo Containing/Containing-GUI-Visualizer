@@ -58,6 +58,12 @@ public class netListener {
                 case 5:         //Add container to storgae
                     readNetwork_addContainerOnStorage(data); 
                     break;
+                case 6:
+                    readNetwork_createCrane(data);
+                    break;
+                case 7:
+                    readNetwork_syncCrane(data);
+                    break;
             }
         }
     }
@@ -172,5 +178,43 @@ public class netListener {
         int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
         int containerId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 5, 9));
         // sync stuff
+    }
+    
+    private void readNetwork_createCrane(byte[] data){
+        int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+        Helpers.Vector3f position = new Vector3f();
+        position.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 5, 4));
+        position.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 9, 4));
+        position.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13, 4));
+        float rotation = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17, 4));
+        int index = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 21, 1));
+        Crane.Crane.CraneType craneType;
+        switch(index)
+        {
+            case 0:
+                craneType = Crane.Crane.CraneType.storage;
+                break;
+            case 1:
+                craneType = Crane.Crane.CraneType.barge;
+                break;
+            case 2: 
+                craneType = Crane.Crane.CraneType.seaship;
+                break;
+            case 3: 
+                craneType = Crane.Crane.CraneType.train;
+                break;
+            case 4: 
+                craneType = Crane.Crane.CraneType.truck;
+                break;
+        }
+        // sync stuff
+    }
+    
+    private void readNetwork_syncCrane(byte[] data){
+        int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+        Helpers.Vector3f position = new Vector3f();
+        position.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 5, 4));
+        position.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 9, 4));
+        position.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13, 4));
     }
 }
