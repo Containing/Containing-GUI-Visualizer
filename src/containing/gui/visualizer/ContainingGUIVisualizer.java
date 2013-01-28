@@ -244,7 +244,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         mat_environment.setTexture("DiffuseMap", assetManager.loadTexture("Models/Environment/texture.png"));
         environment.setMaterial(mat_environment);
         sceneNode.attachChild(environment);   
-        
+        environment.setLocalTranslation(-200, -2, 50);
                 
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
@@ -336,7 +336,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         
         viewPort.addProcessor(waterProcessor);
     
-        waterProcessor.setWaterDepth(40);
+        waterProcessor.setWaterDepth(0.05f);
         waterProcessor.setDistortionScale(0.15f);
         waterProcessor.setWaveSpeed(0.01f);
         
