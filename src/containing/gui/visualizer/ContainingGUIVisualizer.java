@@ -191,7 +191,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         audio_ambient.setLooping(true);  // activate continuous playing
         audio_ambient.setPositional(true);
         audio_ambient.setLocalTranslation(Vector3f.ZERO.clone());
-        audio_ambient.setVolume(1);
+        audio_ambient.setVolume(0.5f);
         node.attachChild(audio_ambient);
         
         audio_boat = new AudioNode(assetManager, "Sounds/boat_ambient.ogg", false);
@@ -227,6 +227,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         float centerZ = (Pathfinder.pathWidth*2*(Pathfinder.gapBetweenRoads+5)+Pathfinder.storageWidth)/2;
         
         Box box = new Box( new Vector3f(centerX, 0, centerZ), centerX,10,centerZ);
+        System.out.println(centerX + " - " + centerZ);
+        
         //Box box = new Box( Vector3f.ZERO, 500,10,500);
         Geometry harborblock = new Geometry("Box", box);
         Material harbormat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -235,6 +237,13 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         //harborblock.setLocalTranslation(-520, -10, 0);
         harborblock.setLocalTranslation(0, -10, 0);
         sceneNode.attachChild(harborblock);
+        
+        
+        Spatial environment = assetManager.loadModel("Models/Environment/environment.obj"); 
+        Material mat_environment = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat_environment.setTexture("DiffuseMap", assetManager.loadTexture("Models/Environment/texture.png"));
+        environment.setMaterial(mat_environment);
+        sceneNode.attachChild(environment);   
         
                 
         DirectionalLight sun = new DirectionalLight();

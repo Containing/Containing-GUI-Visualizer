@@ -88,7 +88,26 @@ public class objectManager {
         defaultErrorTPL.setMaterial(mat_error);
     }
 
+    public void destroyVehicle(int id){
+        visualVehicle v = findVehicle(id);
+        if(v!=null)boatList.remove(v);
+    }
     
+    public void syncVehicle(int id, Pathfinding.Node pos, Pathfinding.Node dest){
+        visualVehicle v = findVehicle(id);
+        
+        System.out.println(id);
+        if(v!=null){
+            try {
+                System.out.println(pos.getPosition().toString());
+                System.out.println(dest.toString());
+                v.setPostion(pos);
+                v.setDestination(dest);
+            } catch (Exception ex) {
+                Logger.getLogger(objectManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     
     /**
      * 
@@ -116,6 +135,7 @@ public class objectManager {
                                                 new Helpers.Vector3f(5,5,5), 
                                                 new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
             System.out.println(base.storage.Count());
+            b.Id = base.Id;
             b.storage = base.storage;
             b.setPostion(base.getPosition());
 
@@ -138,25 +158,13 @@ public class objectManager {
        return null;
     }
 
-    
-    /*
-    public visualVehicle addShip(int id, Vector3f position){
-        try {
-            Spatial model = largeShipTPL.clone();
-            model.setLocalTranslation(position);
-            
-            Node containerNode = new Node();
-            visualVehicle b = new visualVehicle(model, containerNode, new Date(), new Date(), "Transportcompany", new Helpers.Vector3f(5,5,5), new Pathfinding.Node(10, 10));
-            boatList.add(b);
-            rootNode.attachChild(model);
-
-            return b;
-        } catch (Exception ex) {
-            Logger.getLogger(ObjectManager.class.getName()).log(Level.SEVERE, null, ex);
+    private visualVehicle findVehicle(int id){
+        for(visualVehicle v : boatList){
+            if(v.Id==id)return v;            
         }
         return null;
     }
-    */
+
 
     /**
      * 

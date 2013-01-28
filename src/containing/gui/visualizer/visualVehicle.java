@@ -41,7 +41,9 @@ public class visualVehicle extends Vehicles.TransportVehicle {
      * @throws Exception
      */
     public visualVehicle(Spatial model, com.jme3.scene.Node containerNode, Date arrivalDate, Date departureDate, String arrivalCompany, Vehicles.Vehicle.VehicleType vehicleType, Vector3f containerArraySize, Node startPosition)throws Exception{
-        super(arrivalDate, departureDate, arrivalCompany, vehicleType, containerArraySize, startPosition);
+        super(arrivalDate, departureDate, arrivalCompany, vehicleType, containerArraySize, startPosition, null);
+        this.speed *= 10;
+        
         this.model = model;
         this.privateContainerNode = new com.jme3.scene.Node();
         containerNode.attachChild(privateContainerNode);
@@ -60,10 +62,12 @@ public class visualVehicle extends Vehicles.TransportVehicle {
             diff.x-=this.position.x;
             diff.y-=this.position.y;
             diff.z-=this.position.z;
-            diff.normalize();
-
+            
             this.model.setLocalTranslation(this.position.x, this.position.y, this.position.z);
-            model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(diff.x, diff.z), 0f));
+            if(diff.x!=0||diff.z!=0){
+                diff.normalize();
+                model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(diff.x, diff.z), 0f));
+            }
             /*
             try{
                 Vector3f nextNode = this.getDestination().getPosition();
@@ -94,14 +98,17 @@ public class visualVehicle extends Vehicles.TransportVehicle {
      * @param move
      */
     public void move(Vector3f move){
-        model.move(new com.jme3.math.Vector3f(move.x, move.y, move.z));
-        model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(-move.x, -move.z), 0f));
-        this.setPostion( new Helpers.Vector3f(  model.getLocalTranslation().x,
-                                                model.getLocalTranslation().y,
-                                                model.getLocalTranslation().z));
 
-        privateContainerNode.move(new com.jme3.math.Vector3f(move.x, move.y, move.z));
-        privateContainerNode.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(-move.x, -move.z), 0f));
+            model.move(new com.jme3.math.Vector3f(move.x, move.y, move.z));
+            this.setPostion( new Helpers.Vector3f(  model.getLocalTranslation().x,
+                                                    model.getLocalTranslation().y,
+                                                    model.getLocalTranslation().z));
+            privateContainerNode.move(new com.jme3.math.Vector3f(move.x, move.y, move.z));
+
+
+            model.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(-move.x, -move.z), 0f));
+            privateContainerNode.setLocalRotation(new com.jme3.math.Quaternion().fromAngles(0f, (float) Math.atan2(-move.x, -move.z), 0f));
+        
     }
     
     

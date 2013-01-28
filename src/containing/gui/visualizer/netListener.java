@@ -38,7 +38,6 @@ public class netListener {
         while((data=subscriber.recv(ZMQ.NOBLOCK)) != null) {
             System.out.println(data[0]);
 
-            
             switch(data[0]){    //Operator identifier
                 case 0:         //Create new vehicle
                     readNetwork_createVehicle(data);
@@ -47,7 +46,7 @@ public class netListener {
                     readNetwork_syncVehicle(data);                   
                     break;
                 case 2:         //Remove existing vehicle
-                    
+                    readNetwork_destroyVehicle(data); 
                     break;
             }
         }
@@ -80,9 +79,6 @@ public class netListener {
         storage.y = 5;
         storage.z = 5;
         
-        
-
-
         switch( Helpers.byteHelper.toByte(Helpers.byteHelper.getFromArray(data, 41, 1))){
             case 0: //AGV
                 type = Vehicles.TransportVehicle.VehicleType.AGV;
@@ -104,20 +100,20 @@ public class netListener {
         try {
             //Create new vehicle
             //TransportVehicle v = new TransportVehicle(new Date(), new Date(), "HenkTransport", type, storage, Pathfinder.findClosestNode( pos ) );
-            TransportVehicle v = new TransportVehicle(new Date(), new Date(), "HenkTransport", type, storage, Pathfinder.Nodes[146] );
-            v.setDestination( Pathfinder.Nodes[150] );
+            TransportVehicle v = new TransportVehicle(new Date(), new Date(), "HenkTransport", type, storage, Pathfinder.findClosestNode( pos ), null );
+            v.setDestination( Pathfinder.findClosestNode( dest ) );
+            v.Id = id;
             objMgr.addShip(v);
         } catch (Exception ex) {
             Logger.getLogger(ContainingGUIVisualizer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-                    
+        }      
     }
 
     private void readNetwork_syncVehicle(byte[] data){
         int id;
         Helpers.Vector3f pos;
         Helpers.Vector3f dest;
-                
+
         id = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
 
         pos = new Helpers.Vector3f();
@@ -128,10 +124,14 @@ public class netListener {
         dest = new Helpers.Vector3f();
         dest.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17, 4));
         dest.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 21, 4));
-        dest.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 25, 4));            
+        dest.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 25, 4));   
+        
+        objMgr.syncVehicle(id, Pathfinder.findClosestNode( pos ), Pathfinder.findClosestNode( dest ));
     }
     
     private void readNetwork_destroyVehicle(byte[] data){
-
+        int id;
+        id = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
+        objMgr.destroyVehicle(id);
     }
 }
