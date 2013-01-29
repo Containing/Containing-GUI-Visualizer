@@ -54,6 +54,11 @@ public class visualVehicle extends Vehicles.TransportVehicle {
         privateContainerNode.setLocalTranslation(model.getLocalTranslation());
     }    
 
+    public void removeVisual(){
+        privateContainerNode.removeFromParent();
+        model.removeFromParent();
+    }
+    
     public void update(float gameTime){
         try {
             Vector3f diff = new Vector3f(this.position.x,this.position.y,this.position.z);

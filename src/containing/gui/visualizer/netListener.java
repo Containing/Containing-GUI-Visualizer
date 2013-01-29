@@ -152,15 +152,16 @@ public class netListener {
     private void readNetwork_createStorage(byte[] data){
         int VehicleId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 1, 4));
         int containerCount = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 5, 9));
-        
+
         for (int i = 0; i < containerCount; i++) {
             int ContainerId = Helpers.byteHelper.toInt(Helpers.byteHelper.getFromArray(data, 9+16*i, 4));
             Helpers.Vector3f position = new Vector3f();
             position.x = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 13+16*i, 4));
             position.y = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 17+16*i, 4));
             position.z = Helpers.byteHelper.toFloat(Helpers.byteHelper.getFromArray(data, 21+16*i, 4));
+
+            objMgr.addContainer(VehicleId, ContainerId, position);
         }
-        // sync stuff
     }
     
     private void readNetwork_addContainerOnStorage(byte[] data){

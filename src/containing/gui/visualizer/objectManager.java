@@ -5,6 +5,7 @@
 package containing.gui.visualizer;
 
 
+import Main.Container;
 import Vehicles.Vehicle;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
@@ -88,15 +89,28 @@ public class objectManager {
         defaultErrorTPL.setMaterial(mat_error);
     }
 
+    public void addContainer(int vehicleID, int containerID, Helpers.Vector3f position ){
+        visualVehicle v = findVehicle(vehicleID);
+        if(v!=null){
+            Container c = new Container(containerID);
+            v.addContainer(containerID, new com.jme3.math.Vector3f(position.x,position.y,position.z));
+        }
+    }
+    
     public void destroyVehicle(int id){
         visualVehicle v = findVehicle(id);
-        if(v!=null)boatList.remove(v);
+        System.out.println("destroying " + id);
+        if(v!=null){
+            v.removeVisual();
+            boatList.remove(v);
+        }
+        
     }
     
     public void syncVehicle(int id, Pathfinding.Node pos, Pathfinding.Node dest){
         visualVehicle v = findVehicle(id);
         
-        System.out.println(id);
+        System.out.println("syncing " + id);
         if(v!=null){
             try {
                 System.out.println(pos.getPosition().toString());
@@ -116,7 +130,7 @@ public class objectManager {
      */
     public visualVehicle addShip(Vehicles.TransportVehicle base){
        try {
-           System.out.println("Adding ship");
+           System.out.println("Adding " + base.Id);
            Vehicle.VehicleType type = base.GetVehicleType();
 
            Spatial model = largeShipTPL.clone();
@@ -160,8 +174,12 @@ public class objectManager {
 
     private visualVehicle findVehicle(int id){
         for(visualVehicle v : boatList){
-            if(v.Id==id)return v;            
+            if(v.Id==id){
+                System.out.println("Found " + id);
+                return v;
+            }            
         }
+        System.out.println("NOT FOUND " + id);
         return null;
     }
 
