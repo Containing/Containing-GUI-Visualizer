@@ -5,7 +5,11 @@
 package containing.gui.visualizer;
 
 
+import Crane.Crane;
+import Crane.StorageCrane;
 import Main.Container;
+import Pathfinding.Pathfinder;
+import Vehicles.AGV;
 import Vehicles.Vehicle;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
@@ -23,11 +27,13 @@ import java.util.logging.Logger;
  * @author EightOneGulf
  */
 public class objectManager {
-    Spatial largeShipTPL, agvTPL, truckTPL, locomotiveTPL, traincartTPL, defaultErrorTPL;
+    Spatial largeShipTPL, agvTPL, truckTPL, locomotiveTPL, traincartTPL, defaultErrorTPL,
+            largeCraneTPL;
     Node rootNode, containerNode;
 
     
     ArrayList<visualVehicle> boatList;
+    ArrayList<visualCrane> craneList;
     
     
     /**
@@ -43,6 +49,54 @@ public class objectManager {
         loadModels(assetManager);
 
         boatList = new ArrayList<visualVehicle>();
+        craneList = new ArrayList<visualCrane>();
+
+ 
+        try{
+            int id = 0;
+            //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
+            for(int i = 0; i < 10; i++){    
+                // Initialize 10 seaShipCranes
+                Crane c = new Crane(++id, null, 1, Crane.CraneType.seaship, Pathfinder.parkinglots[i+1], Pathfinder.parkinglots[46]);
+                Spatial sp = largeCraneTPL.clone();
+                craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
+                rootNode.attachChild(sp);
+            }
+            for(int i = 0 ; i < 8; i++){     
+                // Initialize 8 BargeCranes
+                Crane c = new Crane(++id, null, 1, Crane.CraneType.barge, Pathfinder.parkinglots[i+12], Pathfinder.parkinglots[47+ (i/4)]);
+                Spatial sp = largeCraneTPL.clone();
+                craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
+                rootNode.attachChild(sp);
+            }        
+            for(int i  =0 ; i < 4; i++){         
+                // Initialize 4 trainCranes
+                Crane c = new Crane(++id, null, 1, Crane.CraneType.train, Pathfinder.parkinglots[i+41], Pathfinder.parkinglots[69 + (i/2)]);
+                Spatial sp = largeCraneTPL.clone();
+                craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
+                rootNode.attachChild(sp);
+            }        
+            for (int i = 0; i < 20; i++){          
+                // Initialize 20 truckCranes
+                Crane c = new Crane(++id, null, 1, Crane.CraneType.train, Pathfinder.parkinglots[i+21], Pathfinder.parkinglots[i+49]);
+                Spatial sp = largeCraneTPL.clone();
+                craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
+                rootNode.attachChild(sp);
+            }   
+        }catch(Exception e){
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        
+        for(int i = 0; i < 100; i++){
+            try {
+                // Set there positions on the parking nodes of each storage crane
+                AGV agv = new AGV(i, Pathfinder.parkinglots[71 +i], null);
+                addShip(agv);
+            } catch (Exception ex) {
+                Logger.getLogger(objectManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }      
     }
 
     private void loadModels(AssetManager assetManager){
@@ -80,7 +134,13 @@ public class objectManager {
         Material mat_traincart = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mat_traincart.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
         traincartTPL.setMaterial(mat_traincart);
-        traincartTPL.scale(1.00f);
+        traincartTPL.scale(1.00f);    
+        
+        largeCraneTPL = assetManager.loadModel("Models/CraneLarge/CraneLarge.obj"); 
+        Material mat_largecrane = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat_largecrane.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
+        largeCraneTPL.setMaterial(mat_largecrane);
+        largeCraneTPL.scale(1.00f);
         
         
         defaultErrorTPL = assetManager.loadModel("Models/Error/Error.obj"); 
@@ -122,6 +182,45 @@ public class objectManager {
             }
         }
     }
+    
+    public visualVehicle addShip(Vehicles.AGV base){
+       try {
+           System.out.println("Adding " + base.Id);
+           Vehicle.VehicleType type = Vehicle.VehicleType.AGV;
+
+           Spatial model = agvTPL.clone();
+
+           visualVehicle b = new visualVehicle( model, 
+                                                containerNode, 
+                                                new Date(), 
+                                                new Date(), 
+                                                "AGV",
+                                                type,
+                                                new Helpers.Vector3f(5,5,5), 
+                                                new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
+            System.out.println(base.storage.Count());
+            b.Id = base.Id;
+            b.storage = base.storage;
+            b.setPostion(base.getPosition());
+
+            
+            if(base.getDestination()!=null)
+                b.setDestination( base.getDestination() );
+
+            System.out.println("Adding to rootnode");
+            System.out.println(model.getLocalTranslation().toString());
+
+            boatList.add(b);
+            rootNode.attachChild(model);
+            
+            
+            return b;
+       } catch (Exception ex) {
+           Logger.getLogger(objectManager.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       return null;
+    }
+    
     
     /**
      * 

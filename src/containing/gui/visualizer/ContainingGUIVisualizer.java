@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import com.jme3.scene.*;
 import com.jme3.scene.shape.Box;
+import com.jme3.texture.Texture;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -241,7 +242,8 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         
         Spatial environment = assetManager.loadModel("Models/Environment/environment.obj"); 
         Material mat_environment = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_environment.setTexture("DiffuseMap", assetManager.loadTexture("Models/Environment/texture.png"));
+        Texture tex_environment = assetManager.loadTexture("Models/Environment/texture.png");
+        mat_environment.setTexture("DiffuseMap", tex_environment);
         environment.setMaterial(mat_environment);
         sceneNode.attachChild(environment);   
         environment.setLocalTranslation(-200, -2, 50);
@@ -392,7 +394,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
 
             
             //Set boat
-            float maxVolume = 1f;
+            float maxVolume = 4f;
             float divider = 100f;
             leastDistance_boat/=divider;
             maxVolume-=leastDistance_boat;
