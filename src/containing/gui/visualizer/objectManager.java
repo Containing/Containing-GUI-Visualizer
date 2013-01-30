@@ -184,11 +184,11 @@ public class objectManager {
     public void syncVehicle(int id, Pathfinding.Node pos, Pathfinding.Node dest){
         visualVehicle v = findVehicle(id);
         
-        System.out.println("syncing " + id);
+        //System.out.println("syncing " + id);
         if(v!=null){
             try {
-                System.out.println(pos.getPosition().toString());
-                System.out.println(dest.toString());
+                //System.out.println(pos.getPosition().toString());
+                //System.out.println(dest.toString());
                 v.setPostion(pos);
                 v.setDestination(dest);
             } catch (Exception ex) {
@@ -199,7 +199,7 @@ public class objectManager {
     
     public visualVehicle addShip(Vehicles.AGV base){
        try {
-           System.out.println("Adding " + base.Id);
+           //System.out.println("Adding " + base.Id);
            Vehicle.VehicleType type = Vehicle.VehicleType.AGV;
 
            Spatial model = agvTPL.clone();
@@ -212,7 +212,7 @@ public class objectManager {
                                                 type,
                                                 new Helpers.Vector3f(5,5,5), 
                                                 new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
-            System.out.println(base.storage.Count());
+            //System.out.println(base.storage.Count());
             b.Id = base.Id;
             b.storage = base.storage;
             b.setPostion(base.getPosition());
@@ -221,8 +221,8 @@ public class objectManager {
             if(base.getDestination()!=null)
                 b.setDestination( base.getDestination() );
 
-            System.out.println("Adding to rootnode");
-            System.out.println(model.getLocalTranslation().toString());
+            //System.out.println("Adding to rootnode");
+            //System.out.println(model.getLocalTranslation().toString());
 
             boatList.add(b);
             rootNode.attachChild(model);
@@ -243,7 +243,7 @@ public class objectManager {
      */
     public visualVehicle addShip(Vehicles.TransportVehicle base){
        try {
-           System.out.println("Adding " + base.Id);
+           //System.out.println("Adding " + base.Id);
            Vehicle.VehicleType type = base.GetVehicleType();
 
            Spatial model = largeShipTPL.clone();
@@ -261,7 +261,7 @@ public class objectManager {
                                                 base.GetVehicleType(),
                                                 new Helpers.Vector3f(5,5,5), 
                                                 new Pathfinding.Node(base.getPosition().x, base.getPosition().z));
-            System.out.println(base.storage.Count());
+            //System.out.println(base.storage.Count());
             b.Id = base.Id;
             b.storage = base.storage;
             b.setPostion(base.getPosition());
@@ -270,13 +270,13 @@ public class objectManager {
             if(base.getDestination()!=null)
                 b.setDestination( base.getDestination() );
 
-            System.out.println("Adding to rootnode");
-            System.out.println(model.getLocalTranslation().toString());
+            //System.out.println("Adding to rootnode");
+            //System.out.println(model.getLocalTranslation().toString());
 
             boatList.add(b);
             rootNode.attachChild(model);
             
-            System.out.println(model.toString());
+            //System.out.println(model.toString());
             
             return b;
        } catch (Exception ex) {
@@ -288,7 +288,7 @@ public class objectManager {
     private visualVehicle findVehicle(int id){
         for(visualVehicle v : boatList){
             if(v.Id==id){
-                System.out.println("Found " + id);
+                //System.out.println("Found " + id);
                 return v;
             }            
         }

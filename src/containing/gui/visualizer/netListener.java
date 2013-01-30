@@ -37,7 +37,7 @@ public class netListener {
         byte[] data;
 
         while((data=subscriber.recv(ZMQ.NOBLOCK)) != null) {
-            System.out.println(data[0]);
+            //System.out.println(data[0]);
 
             switch(data[0]){    //Operator identifier
                 case 0:         //Create new vehicle
@@ -69,7 +69,7 @@ public class netListener {
     }
 
     private void readNetwork_createVehicle(byte[] data){
-        System.out.println("Net: creating vehicle");
+        //System.out.println("Net: creating vehicle");
         int id;
         Helpers.Vector3f pos;
         Helpers.Vector3f dest;

@@ -344,14 +344,14 @@ public class ContainingGUIVisualizer extends SimpleApplication {
         
         Quad quad = new Quad(10000,10000);
         quad.scaleTextureCoordinates(new Vector2f(6f,6f));
-        
+
         water = new Geometry("water", quad);
-        water.setLocalRotation(  new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X) );
+        water.setLocalRotation( new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X) );
         water.setLocalTranslation(-5000, -6, 5000);
-        
+
         Material mat_water = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_water.setColor("Color", ColorRGBA.Blue);
-        
+
         water.setMaterial(mat_water);
         water.setMaterial(waterProcessor.getMaterial());
         rootNode.attachChild(water);

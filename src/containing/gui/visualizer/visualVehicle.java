@@ -62,7 +62,7 @@ public class visualVehicle extends Vehicles.TransportVehicle {
     public void update(float gameTime){
         try {
             Vector3f diff = new Vector3f(this.position.x,this.position.y,this.position.z);
-            super.update(gameTime);
+            super.update(gameTime, true);
             diff.x-=this.position.x;
             diff.y-=this.position.y;
             diff.z-=this.position.z;
