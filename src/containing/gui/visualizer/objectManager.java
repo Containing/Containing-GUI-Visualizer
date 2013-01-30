@@ -51,7 +51,6 @@ public class objectManager {
         boatList = new ArrayList<visualVehicle>();
         craneList = new ArrayList<visualCrane>();
 
- 
         try{
             int id = 0;
             //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
@@ -83,11 +82,20 @@ public class objectManager {
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);
             }
+            
+            Material harbormat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+            harbormat.setTexture("DiffuseMap", assetManager.loadTexture("Models/Harbor/Textures/asphalt.jpg"));
             for(int i = 0 ; i < 100; i++){
-                Crane c = new StorageCrane(i, Pathfinder.parkinglots[71 +i], Pathfinder.parkinglots[171 + i]);
+                StorageCrane c = new StorageCrane(i, Pathfinder.parkinglots[71 +i], Pathfinder.parkinglots[171 + i]);
                 Spatial sp = largeCraneTPL.clone();
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);
+                
+                Box box = new Box( c.GetStorageArea().getWidth(),1, c.GetStorageArea().getLength()*3);
+                Geometry harborblock = new Geometry("Box", box);
+                harborblock.setMaterial(harbormat);
+                harborblock.setLocalTranslation(c.GetStorageArea().position.x, c.GetStorageArea().position.y, c.GetStorageArea().position.z);
+                rootNode.attachChild(harborblock);
             }   
         }catch(Exception e){
             System.out.println(e);
@@ -117,34 +125,34 @@ public class objectManager {
         mat_ship.setTexture("DiffuseMap", assetManager.loadTexture("Models/ShipLarge/Textures/enterprise.png"));
         largeShipTPL.setMaterial(mat_ship);
         largeShipTPL.scale(1.01f);   
-        
+
         agvTPL = assetManager.loadModel("Models/AGV/AGV.obj"); 
-        Material mat_agv = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_agv.setTexture("DiffuseMap", assetManager.loadTexture("Models/AGV/Textures/agv.png"));
+        Material mat_agv = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_agv.setTexture("ColorMap", assetManager.loadTexture("Models/AGV/Textures/agv.png"));
         agvTPL.setMaterial(mat_agv);
         agvTPL.scale(1.00f); 
         
         truckTPL = assetManager.loadModel("Models/Truck/Truck.obj"); 
-        Material mat_truck = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_truck.setTexture("DiffuseMap", assetManager.loadTexture("Models/Truck/Textures/truck.png"));
+        Material mat_truck = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_truck.setTexture("ColorMap", assetManager.loadTexture("Models/Truck/Textures/truck.png"));
         truckTPL.setMaterial(mat_truck);
         truckTPL.scale(1.00f);
         
         locomotiveTPL = assetManager.loadModel("Models/Locomotive/Locomotive.obj"); 
-        Material mat_locomotive = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_locomotive.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
+        Material mat_locomotive = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_locomotive.setTexture("ColorMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
         locomotiveTPL.setMaterial(mat_locomotive);
         locomotiveTPL.scale(1.00f);
         
         traincartTPL = assetManager.loadModel("Models/Traincart/Traincart.obj"); 
-        Material mat_traincart = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_traincart.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
+        Material mat_traincart = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_traincart.setTexture("ColorMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
         traincartTPL.setMaterial(mat_traincart);
         traincartTPL.scale(1.00f);    
         
         largeCraneTPL = assetManager.loadModel("Models/CraneLarge/CraneLarge.obj"); 
-        Material mat_largecrane = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat_largecrane.setTexture("DiffuseMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
+        Material mat_largecrane = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_largecrane.setTexture("ColorMap", assetManager.loadTexture("Models/Locomotive/Textures/Locomotive.png"));
         largeCraneTPL.setMaterial(mat_largecrane);
         largeCraneTPL.scale(1.00f);
         
