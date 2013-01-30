@@ -82,6 +82,12 @@ public class objectManager {
                 Spatial sp = largeCraneTPL.clone();
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);
+            }
+            for(int i = 0 ; i < 100; i++){
+                Crane c = new StorageCrane(i, Pathfinder.parkinglots[71 +i], Pathfinder.parkinglots[171 + i]);
+                Spatial sp = largeCraneTPL.clone();
+                craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
+                rootNode.attachChild(sp);
             }   
         }catch(Exception e){
             System.out.println(e);
