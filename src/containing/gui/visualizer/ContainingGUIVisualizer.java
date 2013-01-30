@@ -294,7 +294,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                 road.setMaterial(roadmat);
                 rootNode.attachChild(road);
             }
-        }
+        }/*
         int nodei = 0;
         for(Pathfinding.Node n : Pathfinding.Pathfinder.Nodes){
             if(n!=null){
@@ -326,7 +326,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
                 road.setMaterial(parkinglotmat);
                 rootNode.attachChild(road);
             }
-        }
+        }*/
     }
     
     private void createWater(Node sceneNode){
