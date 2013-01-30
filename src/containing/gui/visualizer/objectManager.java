@@ -57,28 +57,28 @@ public class objectManager {
             //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
             for(int i = 0; i < 10; i++){    
                 // Initialize 10 seaShipCranes
-                Crane c = new Crane(++id, null, 1, Crane.CraneType.seaship, Pathfinder.parkinglots[i+1], Pathfinder.parkinglots[46]);
+                Crane c = new Crane(++id, 1, Crane.CraneType.seaship, Pathfinder.parkinglots[i+1], Pathfinder.parkinglots[46]);
                 Spatial sp = largeCraneTPL.clone();
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);
             }
             for(int i = 0 ; i < 8; i++){     
                 // Initialize 8 BargeCranes
-                Crane c = new Crane(++id, null, 1, Crane.CraneType.barge, Pathfinder.parkinglots[i+12], Pathfinder.parkinglots[47+ (i/4)]);
+                Crane c = new Crane(++id, 1, Crane.CraneType.barge, Pathfinder.parkinglots[i+12], Pathfinder.parkinglots[47+ (i/4)]);
                 Spatial sp = largeCraneTPL.clone();
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);
             }        
             for(int i  =0 ; i < 4; i++){         
                 // Initialize 4 trainCranes
-                Crane c = new Crane(++id, null, 1, Crane.CraneType.train, Pathfinder.parkinglots[i+41], Pathfinder.parkinglots[69 + (i/2)]);
+                Crane c = new Crane(++id, 1, Crane.CraneType.train, Pathfinder.parkinglots[i+41], Pathfinder.parkinglots[69 + (i/2)]);
                 Spatial sp = largeCraneTPL.clone();
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);
             }        
             for (int i = 0; i < 20; i++){          
                 // Initialize 20 truckCranes
-                Crane c = new Crane(++id, null, 1, Crane.CraneType.train, Pathfinder.parkinglots[i+21], Pathfinder.parkinglots[i+49]);
+                Crane c = new Crane(++id, 1, Crane.CraneType.train, Pathfinder.parkinglots[i+21], Pathfinder.parkinglots[i+49]);
                 Spatial sp = largeCraneTPL.clone();
                 craneList.add(new visualCrane(c.getID(), sp, c.getPosition(), c.getRotation()));
                 rootNode.attachChild(sp);

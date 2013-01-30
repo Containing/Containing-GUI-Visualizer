@@ -394,7 +394,7 @@ public class ContainingGUIVisualizer extends SimpleApplication {
 
             
             //Set boat
-            float maxVolume = 4f;
+            float maxVolume = 1f;
             float divider = 100f;
             leastDistance_boat/=divider;
             maxVolume-=leastDistance_boat;
